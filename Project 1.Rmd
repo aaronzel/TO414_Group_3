@@ -2,7 +2,9 @@
 title: "Project 1"
 author: "Aaron Zelmanov, Muhammad Hafizudeen Mohamad Saman, Nakul Chadha, Kendall Cohen, Michael Geraci, Michael Zhang"
 date: "2/12/2021"
-output: html_document
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -12,8 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Read Data
 ```{r}
 hotel <- read.csv("hotel_bookings.csv")
-str(hotel)
-head(hotel)
+#str(hotel)
+#head(hotel)
 ```
 
 ## Data Cleaning
@@ -32,12 +34,46 @@ hotel$reservation_status <-as.factor(hotel$reservation_status)
 hotel$reserved_room_type <- as.factor(hotel$reserved_room_type)
 hotel$assigned_room_type <- as.factor(hotel$assigned_room_type)
 hotel$deposit_type <- as.factor(hotel$deposit_type)
-
-str(hotel)
-summary(hotel)
 ```
 
 ## Data Exploration
+
+
+**Average number of people that stays at each hotel**
+```{r}
+hotel$num_people <- hotel$adults + hotel$children + hotel$babies
+aggregate(num_people~hotel, data = hotel, mean)
+```
+The table above shows the mean number of guests per reservation 
+<br />
+<br />
+**Hotel cancellations**
+```{r}
+tableCancellations <- table(hotel$is_canceled)
+tableCancellations
+```
+*Table above shows the number of hotels cancelled and not cancelled. Total bookings = 119,390*
+<br />
+<br />
+**Cancellations by hotel type**
+```{r}
+tableCancellationsbyType <- aggregate(is_canceled ~ hotel, data = hotel, sum)
+cityHotels <- sum(hotel$hotel == "City Hotel", na.rm = TRUE)
+resortHotels <- sum(hotel$hotel == "Resort Hotel", na.rm = TRUE)
+tableCancellationsbyType$prop_cancelled <- c(round(33102/cityHotels, 2), round(11122/resortHotels, 2))
+tableCancellationsbyType
+```
+*Table above shows the number of cancellations per hotel type and the proportion of each hotel's bookings that are cancelled* 
+<br />
+<br />
+**Cancellations by market segment**
+```{r}
+tableCancellationsbyMarket <- aggregate(is_canceled ~ market_segment, data = hotel, length)
+tableCancellationsbyMarket
+```
+*Table above shows the cancellations per market segment* 
+
+#-----------
 
 In this section, we will explore the data. First, lets see how much of the people canceled their bookings.
 
