@@ -1,6 +1,6 @@
 ---
 title: "Project 1"
-author: "Aaron Zelmanov, Muhammad Hafizudeen Mohamad Saman"
+author: "Aaron Zelmanov, Muhammad Hafizudeen Mohamad Saman, Nakul Chadha, Kendall Cohen, Michael Geraci, Michael Zhang"
 date: "2/12/2021"
 output: html_document
 ---
