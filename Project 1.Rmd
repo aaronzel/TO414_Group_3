@@ -104,5 +104,5 @@ Most of the months has about 30-40% rate of cancellation, so wa cannot definitel
 
 
 ```{r}
-
+test_var <- c(234)
 ```
