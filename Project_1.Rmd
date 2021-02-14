@@ -40,12 +40,14 @@ tableHotelInfo
 *The table above shows the mean number of guests per reservation and total guests in each hotel from the data* 
 <br />
 <br />
+<br />
 **Hotel cancellations**
 ```{r}
 plot(as.factor(hotel$is_canceled), xlab= "is_cancelled", ylab = "number of people")
 nrow(hotel[hotel$is_canceled == 1,])/nrow(hotel)
 ```
 *Table above shows the number of hotels cancelled and not cancelled. We can see that more than a third canceled their bookings. Total bookings = 119,390*
+<br />
 <br />
 <br />
 **What times of the year are busiest?** 
@@ -57,6 +59,7 @@ ggplot(hotel, aes(seasons)) + geom_bar()
 ```
 <br />
 *Chart above shows how reservations vary with seasons* 
+<br />
 <br />
 <br />
 **How about the arrival month? Are there any famous months for hotel reservation?**
@@ -77,6 +80,7 @@ hotel %>% group_by(arrival_date_month) %>% summarise(num_cancel = sum(is_cancele
 *Most of the months have about 30-40% rate of cancellation, so we cannot definitely say for sure that month affect the rate of cancellation*
 <br />
 <br />
+<br />
 **Cancellations by hotel type**
 ```{r}
 tableCancellationsbyType <- aggregate(is_canceled ~ hotel, data = hotel, sum)
@@ -88,12 +92,14 @@ tableCancellationsbyType
 *Table above shows the number of cancellations per hotel type and the proportion of each hotel's bookings that are cancelled* 
 <br />
 <br />
+<br />
 **Cancellations by market segment**
 ```{r}
 tableCancellationsbyMarket <- aggregate(is_canceled ~ market_segment, data = hotel, length)
 tableCancellationsbyMarket
 ```
 *Table above shows the cancellations per market segment* 
+<br />
 <br />
 <br />
 **Cancellation by country**
