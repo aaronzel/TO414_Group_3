@@ -45,16 +45,14 @@ hotel$num_people <- hotel$adults + hotel$children + hotel$babies
 aggregate(num_people~hotel, data = hotel, mean)
 ```
 The table above shows the mean number of guests per reservation 
-<br />
-<br />
+
 **Hotel cancellations**
 ```{r}
 tableCancellations <- table(hotel$is_canceled)
 tableCancellations
 ```
 *Table above shows the number of hotels cancelled and not cancelled. Total bookings = 119,390*
-<br />
-<br />
+
 **Cancellations by hotel type**
 ```{r}
 tableCancellationsbyType <- aggregate(is_canceled ~ hotel, data = hotel, sum)
@@ -64,8 +62,7 @@ tableCancellationsbyType$prop_cancelled <- c(round(33102/cityHotels, 2), round(1
 tableCancellationsbyType
 ```
 *Table above shows the number of cancellations per hotel type and the proportion of each hotel's bookings that are cancelled* 
-<br />
-<br />
+
 **Cancellations by market segment**
 ```{r}
 tableCancellationsbyMarket <- aggregate(is_canceled ~ market_segment, data = hotel, length)
