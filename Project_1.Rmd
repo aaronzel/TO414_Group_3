@@ -46,13 +46,24 @@ nrow(hotel[hotel$is_canceled == 1,])/nrow(hotel)
 ```
 *Table above shows the number of hotels cancelled and not cancelled. We can see that more than a third canceled their bookings. Total bookings = 119,390*
 
+**Average lead time per hotel**
+
+```{r}
+avg_lead_time_table <- tapply(hotel$lead_time, hotel$hotel, mean, na.rm = TRUE)
+avg_lead_time_table
+```
+*The table above shows the average lead time per hotel. We can see that people, on average, reserve the City Hotel almost 20 days prior to the Resort Hotel.*
+
 **Number of people by market segment**
 
 ```{r}
-summary(hotel$market_segment)
-plot(hotel$market_segment)
-
+#summary(hotel$market_segment)
+#plot(hotel$market_segment)
+market_seg_table <- table(hotel$market_segment, hotel$hotel)
+addmargins(market_seg_table)
 ```
+ 
+*The table above shows the number of people per hotel by market segment.*
 
 
 **What times of the year are busiest?** 
