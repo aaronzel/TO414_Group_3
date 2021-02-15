@@ -118,4 +118,25 @@ tableCancellationsbyMarket
 hotel %>% group_by(country) %>% summarise(num_cancel = sum(is_canceled)) %>% arrange(desc(num_cancel)) %>% head(10) %>% print %>% ggplot(aes(x = country, y = num_cancel, fill= num_cancel))+ geom_col()
 ```
 
+**Regression Trial**
+```{r}
+result <- regress(
+  hotel, 
+  rvar = "is_canceled", 
+  evar = c(
+    "lead_time", "arrival_date_month", 
+    "adults", "children", 
+    "babies", "market_segment", 
+    "distribution_channel", 
+    "is_repeated_guest", 
+    "previous_cancellations", 
+    "previous_bookings_not_canceled", 
+    "booking_changes", "deposit_type", 
+    "days_in_waiting_list", 
+    "customer_type", "adr"
+  )
+)
+summary(result)
+```
+
 
