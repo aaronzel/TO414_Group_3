@@ -37,19 +37,24 @@ tableHotelInfo <- aggregate(num_people~hotel, data = hotel, mean)
 tableHotelInfo$total <- c(sum(hotel$hotel == "City Hotel"), sum(hotel$hotel == "Resort Hotel"))
 tableHotelInfo
 ```
-*The table above shows the mean number of guests per reservation and total guests in each hotel from the data* 
-<br />
-<br />
-<br />
+*The table above shows the mean number of guests per reservation and total guests in each hotel from the data. We can imply through this data that the Resort Hotel is more family-friendly as the average reservation size is higher. Also, businesspeople tend to reserve the City Hotel as demonstrated by the less reservation size** 
+
 **Hotel cancellations**
 ```{r}
 plot(as.factor(hotel$is_canceled), xlab= "is_cancelled", ylab = "number of people")
 nrow(hotel[hotel$is_canceled == 1,])/nrow(hotel)
 ```
 *Table above shows the number of hotels cancelled and not cancelled. We can see that more than a third canceled their bookings. Total bookings = 119,390*
-<br />
-<br />
-<br />
+
+**Number of people by market segment**
+
+```{r}
+summary(hotel$market_segment)
+plot(hotel$market_segment)
+
+```
+
+
 **What times of the year are busiest?** 
 ```{r}
 hotel$seasons <- ifelse(hotel$arrival_date_month == "December" | hotel$arrival_date_month == "January" | hotel$arrival_date_month =="February", "Winter", ifelse(hotel$arrival_date_month == "March" | hotel$arrival_date_month == "April" | hotel$arrival_date_month ==  "May",  "Spring", "Summer"))
@@ -57,11 +62,9 @@ hotel$seasons <- ifelse(hotel$arrival_date_month == "December" | hotel$arrival_d
 library("ggplot2")
 ggplot(hotel, aes(seasons)) + geom_bar()
 ```
-<br />
+
 *Chart above shows how reservations vary with seasons* 
-<br />
-<br />
-<br />
+
 **How about the arrival month? Are there any famous months for hotel reservation?**
 ```{r}
 plot(hotel$arrival_date_month, las = 2)
@@ -78,9 +81,7 @@ barplot(sort(cancellationsbymonth), las = 2)
 hotel %>% group_by(arrival_date_month) %>% summarise(num_cancel = sum(is_canceled)) %>% arrange(desc(num_cancel)) %>% head(10) %>% print %>% ggplot(aes(x = arrival_date_month, y = num_cancel, fill= num_cancel))+ geom_col()
 ```
 *Most of the months have about 30-40% rate of cancellation, so we cannot definitely say for sure that month affect the rate of cancellation*
-<br />
-<br />
-<br />
+
 **Cancellations by hotel type**
 ```{r}
 tableCancellationsbyType <- aggregate(is_canceled ~ hotel, data = hotel, sum)
@@ -90,18 +91,14 @@ tableCancellationsbyType$prop_cancelled <- c(round(33102/cityHotels, 2), round(1
 tableCancellationsbyType
 ```
 *Table above shows the number of cancellations per hotel type and the proportion of each hotel's bookings that are cancelled* 
-<br />
-<br />
-<br />
+
 **Cancellations by market segment**
 ```{r}
 tableCancellationsbyMarket <- aggregate(is_canceled ~ market_segment, data = hotel, length)
 tableCancellationsbyMarket
 ```
 *Table above shows the cancellations per market segment* 
-<br />
-<br />
-<br />
+
 **Cancellation by country**
 ```{r}
 hotel %>% group_by(country) %>% summarise(num_cancel = sum(is_canceled)) %>% arrange(desc(num_cancel)) %>% head(10) %>% print %>% ggplot(aes(x = country, y = num_cancel, fill= num_cancel))+ geom_col()
