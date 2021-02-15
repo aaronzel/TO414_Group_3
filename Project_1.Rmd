@@ -45,6 +45,7 @@ plot(as.factor(hotel$is_canceled), xlab= "is_cancelled", ylab = "number of peopl
 nrow(hotel[hotel$is_canceled == 1,])/nrow(hotel)
 table_cancellations <- table(hotel$is_canceled, hotel$hotel)
 prop.table(table_cancellations)
+addmargins(prop.table(table_cancellations))
 ```
 *Table above shows the number of hotels cancelled and not cancelled. We can see that more than a third canceled their bookings. Total bookings = 119,390*
 
