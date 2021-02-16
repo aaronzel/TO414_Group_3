@@ -1,30 +1,107 @@
 ---
 title: "Project_1_New"
-author: "Aaron Zelmanov"
+author: "Sanjeev's SupeRstars: Aaron Zelmanov, Muhammad Hafizudeen Mohamad Saman, Nakul Chadha, Kendall Cohen, Michael Geraci, Michael Zhang"
 date: "2/15/2021"
-output: html_document
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+#setup 
+hotel <- read.csv("hotel_bookings.csv")
+library("ggplot2")
+library("dplyr")
+
+#factorizing 
+hotel$is_canceled <- as.factor(hotel$is_canceled)
+hotel$hotel <- as.factor(hotel$hotel)
+hotel$arrival_date_year <- as.factor(hotel$arrival_date_year)
+hotel$arrival_date_month <- as.factor(hotel$arrival_date_month)
+hotel$arrival_date_week_number <- as.factor(hotel$arrival_date_week_number)
+hotel$is_repeated_guest <- as.factor(hotel$is_repeated_guest)
+hotel$reservation_status <- as.factor(hotel$reservation_status)
+hotel$customer_type <- as.factor(hotel$customer_type)
+hotel$deposit_type <- as.factor(hotel$deposit_type)
+hotel$reserved_room_type <- as.factor(hotel$reserved_room_type)
+hotel$assigned_room_type <- as.factor(hotel$assigned_room_type)
+hotel$distribution_channel <- as.factor(hotel$distribution_channel)
+hotel$market_segment <- as.factor(hotel$market_segment)
+hotel$country <- as.factor(hotel$country)
+hotel$meal <- as.factor(hotel$meal)
+hotel$company <- as.factor(hotel$company)
+hotel$agent <- as.integer(hotel$agent)
+hotel$has_agent <- ifelse(is.na(hotel$agent) == TRUE, 0, 1)
+hotel$arrival_date_day_of_month <- as.factor(hotel$arrival_date_day_of_month)
+```
+## {.tabset}
+### Introduction 
+
+**Context:** We are working with the hotel_booking.csv dataset to better understand hotel bookings and cancellations. This dataset includes information about: dates, demographics, customer types, reservation details, cancellations, etc. <br /> <br />
+**Audience:** Hotel managers who are worried about hotel cancellations <br /> <br />
+**Key Question:** What is the root cause of cancellations and how can we mitigate this issue? <br /> <br />
+
+### Are Cancellations a Problem? 
+In order to understand if cancellations are a real problem, we must explore our data! We will analyze the number of cancellations and proportion of cancellations over time and then figure out how much this is affecting our revenue <br /> <br />
+
+```{r}
+cancellationNumberPlot <- ggplot(data=hotel, aes(x=is_canceled)) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Count") + ggtitle("Count of Reservations Not Cancelled vs Cancelled") + labs(caption=("Number of Cancellations = 44,224. Total reservations = 119,390")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+cancellationNumberPlot 
+```
+<br /> <br />
+
+```{r}
+cancellationPropPlot <- ggplot(data=hotel, aes(x=is_canceled, y=(..count..)/sum(..count..) )) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Proportion") + ggtitle("Proportion of Reservations Not Cancelled vs Cancelled") + labs(caption=("More than a third of bookings (37%) were cancelled, which is a significant amount")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + theme(plot.title = element_text(hjust = 0.5))
+cancellationPropPlot
+```
+<br /> <br />
+```{r}
+cancellations2015Table <- hotel[hotel$is_canceled==1 & hotel$arrival_date_year==2015,]
+cancellations2015 <- nrow(cancellations2015Table)
+cancellations2016Table <- hotel[hotel$is_canceled==1 & hotel$arrival_date_year==2016,]
+cancellations2016 <- nrow(cancellations2016Table)
+cancellations2017Table <- hotel[hotel$is_canceled==1 & hotel$arrival_date_year==2017,]
+cancellations2017 <- nrow(cancellations2017Table)
+
+bookings2015Table <- hotel[hotel$arrival_date_year==2015,]
+bookings2015 <- nrow(bookings2015Table)
+bookings2016Table <- hotel[hotel$arrival_date_year==2016,]
+bookings2016 <- nrow(bookings2016Table)
+bookings2017Table <- hotel[hotel$arrival_date_year==2017,]
+bookings2017 <- nrow(bookings2017Table)
+
+table1 <- data_frame(year = c(2015,2016,2017), count = c(cancellations2015,cancellations2016,cancellations2017), prop = c(cancellations2015/bookings2015,cancellations2016/bookings2016,cancellations2017/bookings2017))
+
+cancellationNumberOverTime<- ggplot(data=table1, aes(x=year,y=count)) + ggtitle("Number of Cancellations over Time") + labs(x="Year", y="Count",caption=("The number of cancellations was increasing from 2015 to 2016 but has been showing an overall decrease since then")) + geom_line() + theme(plot.title = element_text(hjust = 0.5))
+cancellationNumberOverTime
+
+cancellationPropOverTime <- ggplot(data=table1, aes(x=year,y=prop)) + ggtitle("Proportion of Cancellations over Time") + labs(x="Year", y="Proportion",caption=("The proportion of cancellations was decreasing from 2015 to 2016 but has been showing an overall increase since then")) + geom_line() + theme(plot.title = element_text(hjust = 0.5))
+cancellationPropOverTime
+```
+<br /> <br />
+*Based on the findings, we know that from 2015-2016, the number of bookings was outpacing the number of cancellations because the proportion was decreasing. Since then, the number of cancellations (although less than before) has been outpacing the number of bookings*
+<br /> <br />
+
+**Are we losing money because of the cancellations?**
+
+#AARON START HERE
+```{r}
+
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+### Causes of the Cancellation Problem 
+```{r}
+# (Kendall + Mike + Michael)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+### Solutions to the Cancellation Problem
+```{r}
+# To be done later (after Wednesday)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
