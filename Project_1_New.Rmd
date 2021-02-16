@@ -39,24 +39,24 @@ hotel$arrival_date_day_of_month <- as.factor(hotel$arrival_date_day_of_month)
 ## {.tabset}
 ### Introduction 
 
-**Context:** We are working with the hotel_booking.csv dataset to better understand hotel bookings and cancellations. This dataset includes information about: dates, demographics, customer types, reservation details, cancellations, etc. <br /> <br />
-**Audience:** Hotel managers who are worried about hotel cancellations <br /> <br />
-**Key Question:** What is the root cause of cancellations and how can we mitigate this issue? <br /> <br />
+**Context:** We are working with the hotel_booking.csv dataset to better understand hotel bookings and cancellations. This dataset includes information about: dates, demographics, customer types, reservation details, cancellations, etc.
+**Audience:** Hotel managers who are worried about hotel cancellations
+**Key Question:** What is the root cause of cancellations and how can we mitigate this issue? 
 
 ### Are Cancellations a Problem? 
-In order to understand if cancellations are a real problem, we must explore our data! We will analyze the number of cancellations and proportion of cancellations over time and then figure out how much this is affecting our revenue <br /> <br />
+In order to understand if cancellations are a real problem, we must explore our data! We will analyze the number of cancellations and proportion of cancellations over time and then figure out how much this is affecting our revenue 
 
 ```{r}
 cancellationNumberPlot <- ggplot(data=hotel, aes(x=is_canceled)) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Count") + ggtitle("Count of Reservations Not Cancelled vs Cancelled") + labs(caption=("Number of Cancellations = 44,224. Total reservations = 119,390")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
 cancellationNumberPlot 
 ```
-<br /> <br />
+
 
 ```{r}
 cancellationPropPlot <- ggplot(data=hotel, aes(x=is_canceled, y=(..count..)/sum(..count..) )) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Proportion") + ggtitle("Proportion of Reservations Not Cancelled vs Cancelled") + labs(caption=("More than a third of bookings (37%) were cancelled, which is a significant amount")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + theme(plot.title = element_text(hjust = 0.5))
 cancellationPropPlot
 ```
-<br /> <br />
+
 ```{r}
 cancellations2015Table <- hotel[hotel$is_canceled==1 & hotel$arrival_date_year==2015,]
 cancellations2015 <- nrow(cancellations2015Table)
@@ -80,15 +80,16 @@ cancellationNumberOverTime
 cancellationPropOverTime <- ggplot(data=table1, aes(x=year,y=prop)) + ggtitle("Proportion of Cancellations over Time") + labs(x="Year", y="Proportion",caption=("The proportion of cancellations was decreasing from 2015 to 2016 but has been showing an overall increase since then")) + geom_line() + theme(plot.title = element_text(hjust = 0.5))
 cancellationPropOverTime
 ```
-<br /> <br />
+
 *Based on the findings, we know that from 2015-2016, the number of bookings was outpacing the number of cancellations because the proportion was decreasing. Since then, the number of cancellations (although less than before) has been outpacing the number of bookings*
-<br /> <br />
 
 **Are we losing money because of the cancellations?**
 
 #AARON START HERE
 ```{r}
-
+tapply(hotel$adr, hotel$is_canceled, sum, na.rm = TRUE)
+table_deposit_type <- table(hotel$deposit_type, hotel$is_canceled)
+addmargins(table_deposit_type)
 ```
 
 
