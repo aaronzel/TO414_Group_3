@@ -1,4 +1,4 @@
----
+hot---
 title: "Project_1_New"
 author: "Sanjeev's SupeRstars: Aaron Zelmanov, Muhammad Hafizudeen Mohamad Saman, Nakul Chadha, Kendall Cohen, Michael Geraci, Michael Zhang"
 date: "2/15/2021"
@@ -111,6 +111,15 @@ correlations
 # (Kendall + Mike + Michael) plotting the highly correlated variables with cancellations and explaining the correlations. Then, buildiing additional graphs to further analyze
 ```
 
+**Previous Cancellations Indicators**
+``` {r}
+has_canceled <- hotel[hotel$previous_cancellations > 0,]
+prop.table(table(has_canceled$is_canceled))
+ggplot(has_canceled, aes(is_canceled, fill= is_canceled))+ geom_bar() + labs(x="Canceled Reservation", y= "Count of Canceled Reservations") + ggtitle("Reservations canceled by those who have canceled in the past")
+
+```
+
+*Based on this finding we see that if someone has canceled their reservation in the past, they are highly likely to cancel once again*
 
 ### Solutions to the Cancellation Problem
 ```{r}
