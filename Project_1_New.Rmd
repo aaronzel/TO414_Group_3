@@ -128,6 +128,25 @@ ggplot(has_canceled, aes(is_canceled, fill= is_canceled))+ geom_bar() + labs(x="
 
 *Based on this finding we see that if someone has canceled their reservation in the past, they are highly likely to cancel once again*
 
+**Presence of Agent**
+
+*Now, we want to look if having an agent have an affect on the rate of cancellation*
+```{r}
+## plot of people who does not have agent
+ggplot(data=hotel[hotel$has_agent == 0,], aes(x=is_canceled,fill= as.numeric(is_canceled))) + ggtitle("People who Does not have Agent") + xlab("Cancelled Reservation") + geom_bar()
+
+##proportion of people who canceled in the group of people who doesnt have agent
+sum(hotel$has_agent == 0 & hotel$is_canceled == 1)/sum(hotel$has_agent == 0)
+
+
+## plot of people who have agent
+ggplot(data=hotel[hotel$has_agent == 1,], aes(x=is_canceled,fill= as.numeric(is_canceled))) + ggtitle("People who have Agent") + xlab("Cancelled Reservation") + geom_bar()
+
+##proportion of people who canceled in the group of people who have agent
+sum(hotel$has_agent == 1 & hotel$is_canceled == 1)/sum(hotel$has_agent == 1)
+```
+*From the graph above, more than 39% of people who have an agent canceled their reservation compared to only 24.7% in the people who does not have an agent. This suggests that people who have an agent have more tendency to cancel their reservations compared to the ones who does not have any agent.*
+
 ### Solutions to the Cancellation Problem
 ```{r}
 # To be done later (after Wednesday)
