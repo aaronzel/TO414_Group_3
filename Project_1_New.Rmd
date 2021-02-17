@@ -131,6 +131,40 @@ ggplot(has_canceled, aes(is_canceled, fill= is_canceled))+ geom_bar() + labs(x="
 
 *Based on this finding we see that if someone has canceled their reservation in the past, they are highly likely to cancel once again*
 
+```{r}
+# Lead Time 
+summary(hotel$lead_time)
+hotel$lead_time_range <- cut(hotel$lead_time, 
+                             breaks = c(0, 18, 69, 160, 738), right = FALSE, 
+                             labels = c( "Lowest", "Low/Middle", "High/Middle", "Highest"))
+
+plot(hotel$lead_time_range)
+
+ggplot(hotel, aes(x=lead_time_range, fill=is_canceled)) + geom_bar()
+
+ggplot(hotel, aes(x=is_canceled, fill=lead_time_range)) + geom_bar()
+
+# LT Prop Table 1: Prop table showing percentage of each lead time group that canceled/ did not cancel. 1 indicates cancellation. 
+prop.table(table(hotel$lead_time_range, hotel$is_canceled),1)
+
+# Pie chart showing lead time to cancellations 
+hotel_is_canceled <- hotel[!(hotel$is_canceled == 0),]
+hotel_is_canceled %>% group_by(lead_time_range) %>% summarize(n=n()) %>% ggplot(aes("", n, fill = lead_time_range)) + geom_bar(stat = 'identity', width = 1, color = "white") + coord_polar("y", start = 0) + theme_void() + labs(title = "Lead Time When Guest Cancelled")
+
+# Pie chart showing lead time when NOT canceled
+hotel_is_not_canceled <- hotel[!(hotel$is_canceled == 1),]
+hotel_is_not_canceled %>% group_by(lead_time_range) %>% summarize(n=n()) %>% ggplot(aes("", n, fill = lead_time_range)) + geom_bar(stat = 'identity', width = 1, color = "white") + coord_polar("y", start = 0) + theme_void() + labs(title = "Lead Time When Guest Did NOT Cancel")
+
+ggplot(hotel, aes(lead_time,  colour = is_canceled)) + geom_bar()
+
+ggplot(hotel_is_not_canceled, aes(arrival_date_week_number, lead_time,  colour = is_canceled)) + geom_point()
+
+# There is greater lead time in the middle of the year (summer)
+
+
+```
+LT Prop Table 1 and the above pie charts show that there is a very obvious relationship between lead time and cancellation. The further in advanced a person books, the more likely that they canceled. Of all the people who booked in the "Highest Lead Time" bucket, 55.3% ended up canceling. This is vastly different from people in the "Lowest Lead Time" bucket, where only 14% canceled. We also separated people who booked on the same day, and found that 6.8% of people canceled. This was surprising to the team because although 6.8% is relatively low, we did not expect people to change their minds so quickly.
+
 **Presence of Agent**
 
 *Now, we want to look if having an agent have an affect on the rate of cancellation*
