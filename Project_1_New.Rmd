@@ -89,7 +89,15 @@ cancellationPropOverTime
 
 #AARON START HERE
 ```{r}
-tapply(hotel$adr, hotel$is_canceled, sum, na.rm = TRUE)
+avg_adr_cancel <- hotel[hotel$is_canceled==1, ]/hotel$adr
+
+
+table_mean_adr_canceled <- tapply(hotel$adr, hotel$is_canceled, mean, na.rm = TRUE)
+table_mean_adr_canceled
+ddply(hotel, hotel$is_canceled, summarise, mean=mean(adr))
+df <- data.frame(template=names(table_mean_adr_canceled), mean=table_mean_adr_canceled)
+plot_mean_adr_canceled <- ggplot(data = df, aes(x=hotel$is_canceled)) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("ADR")+ ggtitle("Average ADR If Not Cancelled or Cancelled") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + theme(plot.title = element_text(hjust = 0.5))
+plot_mean_adr_canceled
 table_deposit_type <- table(hotel$deposit_type, hotel$is_canceled)
 addmargins(table_deposit_type)
 ```
