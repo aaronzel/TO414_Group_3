@@ -40,7 +40,9 @@ hotel$arrival_date_day_of_month <- as.factor(hotel$arrival_date_day_of_month)
 ### Introduction 
 
 **Context:** We are working with the hotel_booking.csv dataset to better understand hotel bookings and cancellations. This dataset includes information about: dates, demographics, customer types, reservation details, cancellations, etc.
+
 **Audience:** Hotel managers who are worried about hotel cancellations
+
 **Key Question:** What is the root cause of cancellations and how can we mitigate this issue? 
 
 ### Are Cancellations a Problem? 
@@ -95,10 +97,20 @@ addmargins(table_deposit_type)
 
 ### Causes of the Cancellation Problem 
 ```{r}
+hotel$is_canceled <- as.numeric(hotel$is_canceled)
+hotel$arrival_date_year <- as.numeric(hotel$arrival_date_year)
+hotel$arrival_date_month <- as.numeric(hotel$arrival_date_month)
+hotel$arrival_date_week_number <- as.numeric(hotel$arrival_date_week_number)
+hotel$is_repeated_guest <- as.numeric(hotel$is_repeated_guest)
+hotel$arrival_date_day_of_month <- as.numeric(hotel$arrival_date_day_of_month)
+
+
+correlations <- cor(hotel[sapply(hotel, function(x) is.numeric(x))])[,1]
+correlations
+
 # (Kendall + Mike + Michael)
 
 ```
-
 
 
 ### Solutions to the Cancellation Problem
