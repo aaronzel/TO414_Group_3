@@ -97,19 +97,18 @@ addmargins(table_deposit_type)
 
 ### Causes of the Cancellation Problem 
 ```{r}
-hotel$is_canceled <- as.numeric(hotel$is_canceled)
-hotel$arrival_date_year <- as.numeric(hotel$arrival_date_year)
-hotel$arrival_date_month <- as.numeric(hotel$arrival_date_month)
-hotel$arrival_date_week_number <- as.numeric(hotel$arrival_date_week_number)
-hotel$is_repeated_guest <- as.numeric(hotel$is_repeated_guest)
-hotel$arrival_date_day_of_month <- as.numeric(hotel$arrival_date_day_of_month)
+hotel$is_canceled_2 <- as.numeric(hotel$is_canceled)
+hotel$arrival_date_year_2 <- as.numeric(hotel$arrival_date_year)
+hotel$arrival_date_month_2 <- as.numeric(hotel$arrival_date_month)
+hotel$arrival_date_week_number_2 <- as.numeric(hotel$arrival_date_week_number)
+hotel$is_repeated_guest_2 <- as.numeric(hotel$is_repeated_guest)
+hotel$arrival_date_day_of_month_2 <- as.numeric(hotel$arrival_date_day_of_month)
 
 
 correlations <- cor(hotel[sapply(hotel, function(x) is.numeric(x))])[,1]
 correlations
 
-# (Kendall + Mike + Michael)
-
+# (Kendall + Mike + Michael) plotting the highly correlated variables with cancellations and explaining the correlations. Then, buildiing additional graphs to further analyze
 ```
 
 
