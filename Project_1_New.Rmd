@@ -54,13 +54,12 @@ cancellationNumberPlot <- ggplot(data=hotel, aes(x=is_canceled)) + geom_bar() + 
 cancellationNumberPlot 
 ```
 
-
 ```{r}
 cancellationPropPlot <- ggplot(data=hotel, aes(x=is_canceled, y=(..count..)/sum(..count..) )) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Proportion") + ggtitle("Proportion of Reservations Not Cancelled vs Cancelled") + labs(caption=("More than a third of bookings (37%) were cancelled, which is a significant amount")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + theme(plot.title = element_text(hjust = 0.5))
 cancellationPropPlot
 ```
 
-```{r}
+```{r, warning = FALSE}
 cancellations2015Table <- hotel[hotel$is_canceled==1 & hotel$arrival_date_year==2015,]
 cancellations2015 <- nrow(cancellations2015Table)
 cancellations2016Table <- hotel[hotel$is_canceled==1 & hotel$arrival_date_year==2016,]
@@ -87,10 +86,7 @@ hotel$is_canceled_2 <- as.numeric(hotel$is_canceled)
 hotel$time <- 1:nrow(hotel)
 hotel %>% group_by(arrival_date_month,arrival_date_year) %>%
    summarize(is_canceled_2=sum(is_canceled_2))
-
-
 ```
-
 *Based on the findings, we know that from 2015-2016, the number of bookings was outpacing the number of cancellations because the proportion was decreasing. Since then, the number of cancellations (although less than before) has been outpacing the number of bookings*
 
 **Are we losing money because of the cancellations?**
@@ -106,6 +102,7 @@ addmargins(table_deposit_type)
 
 
 ### Causes of the Cancellation Problem 
+Now that we know cancellations are indeed a problem for hotel managers, we must understand what is causing them! We will begin my understanding the correlations of various variables with cancellations and then understand how these variables relate to a cancelled booking. Therafter, we will explain our results in order to better illustrate what we are seeeing in the data. 
 ```{r}
 hotel$is_canceled_2 <- as.numeric(hotel$is_canceled)
 hotel$arrival_date_year_2 <- as.numeric(hotel$arrival_date_year)
