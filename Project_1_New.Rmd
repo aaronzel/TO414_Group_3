@@ -1,4 +1,4 @@
-hot---
+---
 title: "Project_1_New"
 author: "Sanjeev's SupeRstars: Aaron Zelmanov, Muhammad Hafizudeen Mohamad Saman, Nakul Chadha, Kendall Cohen, Michael Geraci, Michael Zhang"
 date: "2/15/2021"
@@ -76,10 +76,10 @@ bookings2017 <- nrow(bookings2017Table)
 
 table1 <- data_frame(year = c(2015,2016,2017), count = c(cancellations2015,cancellations2016,cancellations2017), prop = c(cancellations2015/bookings2015,cancellations2016/bookings2016,cancellations2017/bookings2017))
 
-cancellationNumberOverTime<- ggplot(data=table1, aes(x=year,y=count)) + ggtitle("Number of Cancellations over Time") + labs(x="Year", y="Count",caption=("The number of cancellations was increasing from 2015 to 2016 but has been showing an overall decrease since then")) + geom_line() + theme(plot.title = element_text(hjust = 0.5))
+cancellationNumberOverTime<- ggplot(data=table1, aes(x=year,y=count)) + geom_bar(stat='identity') + ggtitle("Number of Cancellations over Time") + labs(x="Year", y="Count",caption=("The number of cancellations was increasing from 2015 to 2016 but has been showing an overall decrease since then")) + theme(plot.title = element_text(hjust = 0.5))
 cancellationNumberOverTime
 
-cancellationPropOverTime <- ggplot(data=table1, aes(x=year,y=prop)) + ggtitle("Proportion of Cancellations over Time") + labs(x="Year", y="Proportion",caption=("The proportion of cancellations was decreasing from 2015 to 2016 but has been showing an overall increase since then")) + geom_line() + theme(plot.title = element_text(hjust = 0.5))
+cancellationPropOverTime <- ggplot(data=table1, aes(x=year,y=prop)) + geom_bar(stat='identity') + ggtitle("Proportion of Cancellations over Time") + labs(x="Year", y="Proportion",caption=("The proportion of cancellations was decreasing from 2015 to 2016 but has been showing a slight increase since then")) + theme(plot.title = element_text(hjust = 0.5))
 cancellationPropOverTime
 ```
 
@@ -89,7 +89,15 @@ cancellationPropOverTime
 
 #AARON START HERE
 ```{r}
-tapply(hotel$adr, hotel$is_canceled, sum, na.rm = TRUE)
+avg_adr_cancel <- hotel[hotel$is_canceled==1, ]/hotel$adr
+
+
+table_mean_adr_canceled <- tapply(hotel$adr, hotel$is_canceled, mean, na.rm = TRUE)
+table_mean_adr_canceled
+ddply(hotel, hotel$is_canceled, summarise, mean=mean(adr))
+df <- data.frame(template=names(table_mean_adr_canceled), mean=table_mean_adr_canceled)
+plot_mean_adr_canceled <- ggplot(data = df, aes(x=hotel$is_canceled)) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("ADR")+ ggtitle("Average ADR If Not Cancelled or Cancelled") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + theme(plot.title = element_text(hjust = 0.5))
+plot_mean_adr_canceled
 table_deposit_type <- table(hotel$deposit_type, hotel$is_canceled)
 addmargins(table_deposit_type)
 ```
