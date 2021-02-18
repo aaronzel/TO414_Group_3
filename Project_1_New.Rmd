@@ -124,6 +124,8 @@ correlations %>% ggplot(aes(x=reorder(rownames(correlations), correlations[,1]),
 ```
 
 **Previous Cancellations Indicators**
+
+Proportion of those with previous cancellations that have cancelled
 ``` {r}
 has_canceled <- hotel[hotel$previous_cancellations > 0,]
 prop.table(table(has_canceled$is_canceled))
