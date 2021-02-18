@@ -56,11 +56,11 @@ cancellationNumberPlot
 ```
 
 ```{r}
-cancellationPropPlot <- ggplot(data=hotel, aes(x=is_canceled, y=(..count..)/sum(..count..) )) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Proportion") + ggtitle("Proportion of Reservations Not Cancelled vs Cancelled") + labs(caption=("More than a third of bookings (37%) were cancelled, which is a significant amount")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + theme(plot.title = element_text(hjust = 0.5))
+cancellationPropPlot <- ggplot(data=hotel, aes(x=is_canceled, y=(..count..)/sum(..count..) )) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Proportion") + ggtitle("Proportion of Reservations Not Cancelled vs Cancelled") + labs(caption=("More than a third of bookings (37%) were cancelled, which is a significant amount")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
 cancellationPropPlot
 ```
 
-```{r, warning = FALSE}
+```{r, warning = FALSE, warn.conflicts = FALSE, dplyr.summarise.inform = FALSE}
 cancellations2015Table <- hotel[hotel$is_canceled==1 & hotel$arrival_date_year==2015,]
 cancellations2015 <- nrow(cancellations2015Table)
 cancellations2016Table <- hotel[hotel$is_canceled==1 & hotel$arrival_date_year==2016,]
@@ -77,17 +77,21 @@ bookings2017 <- nrow(bookings2017Table)
 
 table1 <- data_frame(year = c(2015,2016,2017), count = c(cancellations2015,cancellations2016,cancellations2017), prop = c(cancellations2015/bookings2015,cancellations2016/bookings2016,cancellations2017/bookings2017))
 
-cancellationNumberOverTime<- ggplot(data=table1, aes(x=year,y=count)) + geom_bar(stat='identity') + ggtitle("Number of Cancellations over Time") + labs(x="Year", y="Count",caption=("The number of cancellations was increasing from 2015 to 2016 but has been showing an overall decrease since then")) + theme(plot.title = element_text(hjust = 0.5))
-cancellationNumberOverTime
-
-cancellationPropOverTime <- ggplot(data=table1, aes(x=year,y=prop)) + geom_bar(stat='identity') + ggtitle("Proportion of Cancellations over Time") + labs(x="Year", y="Proportion",caption=("The proportion of cancellations was decreasing from 2015 to 2016 but has been showing a slight increase since then")) + theme(plot.title = element_text(hjust = 0.5))
-cancellationPropOverTime
+cancellationNumberByYear<- ggplot(data=table1, aes(x=year,y=count)) + geom_bar(stat='identity') + ggtitle("Number of Cancellations by Year") + labs(x="Year", y="Count",caption=("The number of cancellations increased from 2015 to 2016 but has decreased since then")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+cancellationNumberByYear
 
 hotel$is_canceled_2 <- as.numeric(hotel$is_canceled)
 hotel$month_year <- as.yearmon(paste(hotel$arrival_date_month, hotel$arrival_date_year))
 hotel %>% group_by(month_year) %>%
-   summarize(sum_canceled=sum(is_canceled_2))
+   summarize(sum_canceled=sum(is_canceled_2)) %>% ggplot() + geom_point(aes(x=month_year, y=sum_canceled)) + geom_line(aes(x=month_year, y=sum_canceled)) + ggtitle("Number of Cancellations by Month over Time") + labs(x="Month and Year", y="Count",caption=("The number of cancellations are variable (seasonality + idiosyncratic effects) but show a somewhat increasing trend")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+
+cancellationPropByYear <- ggplot(data=table1, aes(x=year,y=prop)) + geom_bar(stat='identity') + ggtitle("Proportion of Cancellations by Year") + labs(x="Year", y="Proportion",caption=("The proportion of cancellations decreased from 2015 to 2016 but has slightly increased since then")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+cancellationPropByYear
+
+hotel %>% group_by(month_year) %>%
+    summarize (n=n()) %>% mutate(prop_canceled=sum(n)/n) %>% ggplot() + geom_point(aes(x=month_year, y=prop_canceled)) + geom_line(aes(x=month_year, y=prop_canceled)) + ggtitle("Proportion of Cancellations by Month over Time") + labs(x="Month and Year", y="Proportion",caption=("The proportion of cancellations are also variable but show a somewhat decreasing trend")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
 ```
+
 *Based on the findings, we know that from 2015-2016, the number of bookings was outpacing the number of cancellations because the proportion was decreasing. Since then, the number of cancellations (although less than before) has been outpacing the number of bookings*
 
 **Are we losing money because of the cancellations?**
@@ -105,7 +109,6 @@ addmargins(table_deposit_type)
 ### Causes of the Cancellation Problem 
 Now that we know cancellations are indeed a problem for hotel managers, we must understand what is causing them! We will begin my understanding the correlations of various variables with cancellations and then understand how these variables relate to a cancelled booking. Thereafter, we will explain our results in order to better illustrate what we are seeeing in the data. 
 ```{r, warning = FALSE}
-hotel$is_canceled_2 <- as.numeric(hotel$is_canceled)
 hotel$arrival_date_year_2 <- as.numeric(hotel$arrival_date_year)
 hotel$arrival_date_month_2 <- as.numeric(hotel$arrival_date_month)
 hotel$arrival_date_week_number_2 <- as.numeric(hotel$arrival_date_week_number)
