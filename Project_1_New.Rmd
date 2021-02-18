@@ -15,6 +15,7 @@ hotel <- read.csv("hotel_bookings.csv")
 library("ggplot2")
 library("dplyr")
 library("lubridate")
+library("zoo")
 
 #factorizing 
 hotel$is_canceled <- as.factor(hotel$is_canceled)
@@ -83,9 +84,9 @@ cancellationPropOverTime <- ggplot(data=table1, aes(x=year,y=prop)) + geom_bar(s
 cancellationPropOverTime
 
 hotel$is_canceled_2 <- as.numeric(hotel$is_canceled)
-hotel$time <- 1:nrow(hotel)
-hotel %>% group_by(arrival_date_month,arrival_date_year) %>%
-   summarize(is_canceled_2=sum(is_canceled_2))
+hotel$month_year <- as.yearmon(paste(hotel$arrival_date_month, hotel$arrival_date_year))
+hotel %>% group_by(month_year) %>%
+   summarize(sum_canceled=sum(is_canceled_2))
 ```
 *Based on the findings, we know that from 2015-2016, the number of bookings was outpacing the number of cancellations because the proportion was decreasing. Since then, the number of cancellations (although less than before) has been outpacing the number of bookings*
 
@@ -102,8 +103,8 @@ addmargins(table_deposit_type)
 
 
 ### Causes of the Cancellation Problem 
-Now that we know cancellations are indeed a problem for hotel managers, we must understand what is causing them! We will begin my understanding the correlations of various variables with cancellations and then understand how these variables relate to a cancelled booking. Therafter, we will explain our results in order to better illustrate what we are seeeing in the data. 
-```{r}
+Now that we know cancellations are indeed a problem for hotel managers, we must understand what is causing them! We will begin my understanding the correlations of various variables with cancellations and then understand how these variables relate to a cancelled booking. Thereafter, we will explain our results in order to better illustrate what we are seeeing in the data. 
+```{r, warning = FALSE}
 hotel$is_canceled_2 <- as.numeric(hotel$is_canceled)
 hotel$arrival_date_year_2 <- as.numeric(hotel$arrival_date_year)
 hotel$arrival_date_month_2 <- as.numeric(hotel$arrival_date_month)
@@ -111,9 +112,10 @@ hotel$arrival_date_week_number_2 <- as.numeric(hotel$arrival_date_week_number)
 hotel$is_repeated_guest_2 <- as.numeric(hotel$is_repeated_guest)
 hotel$arrival_date_day_of_month_2 <- as.numeric(hotel$arrival_date_day_of_month)
 
-correlations <- cor(hotel[sapply(hotel, function(x) is.numeric(x))])[16,]
-correlations
-#as.data.frame(correlations) %>% ggplot(aes(x=name, y=correlations)) + geom_bar(stat = 'identity')
+correlations <- as.data.frame(cor(hotel[sapply(hotel, function(x) is.numeric(x))])[16,])
+correlations %>% ggplot(aes(x=reorder(rownames(correlations), correlations[,1]), y=correlations[,1])) + 
+  geom_bar(stat = 'identity') + ggtitle("Correlations with Cancellations") + labs(x="Variables", y="Cancellations",caption=("The bar graph above displays the hotel_bookings variables that have a correlation with cancellations in increasing order")) + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90))
+
 
 # (Kendall + Mike + Michael) plotting the highly correlated variables with cancellations and explaining the correlations. Then, buildiing additional graphs to further analyze
 ```
