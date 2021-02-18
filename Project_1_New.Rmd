@@ -111,16 +111,19 @@ df
 104.96 * 44224
 ```
 
-*As demonstrated more than $4.5 million dollars is lost.*
+*As demonstrated, more than $4.5 million dollars is lost.*
 
 ```{r}
-
 #plot_mean_adr_canceled <- ggplot(data = df, aes(x=hotel$is_canceled)) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("ADR")+ ggtitle("Average ADR If Not Cancelled or Cancelled") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + theme(plot.title = element_text(hjust = 0.5))
 #plot_mean_adr_canceled
 table_deposit_type <- table(hotel$deposit_type, hotel$is_canceled)
 addmargins(table_deposit_type)
 ```
-
+```{r}
+prop_table <- prop.table(table_deposit_type)
+addmargins(prop_table)
+```
+*We can make several observations from the two tables above. First, cancellations make up 37% of all reservations. However, of those cancelling, there is a tremendous difference in non-refundable reservations. Although customers pay a non-refundable deposit, this does not constitute the full reservation amount, meaning that the hotel will still lose the money.
 
 ### Causes of the Cancellation Problem 
 Now that we know cancellations are indeed a problem for hotel managers, we must understand what is causing them! We will begin my understanding the correlations of various variables with cancellations and then understand how these variables relate to a cancelled booking. Thereafter, we will explain our results in order to better illustrate what we are seeeing in the data. 
