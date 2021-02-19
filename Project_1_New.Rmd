@@ -152,7 +152,7 @@ ggplot(has_canceled, aes(is_canceled, fill= is_canceled))+ geom_bar() + labs(x="
 
 ```
 
-*Based on this finding we see that if someone has canceled their reservation in the past, they are highly likely to cancel once again*
+*Based on this finding we see that if someone has canceled their reservation in the past, they are highly likely to cancel once again. This is an example of the motif: "The best indicator of future behavior is past behavior*
 
 ```{r}
 # Lead Time 
@@ -208,6 +208,10 @@ sum(hotel$has_agent == 1 & hotel$is_canceled == 1)/sum(hotel$has_agent == 1)
 *From the graph above, more than 39% of people who have an agent canceled their reservation compared to only 24.7% in the people who does not have an agent. This suggests that people who have an agent have more tendency to cancel their reservations compared to the ones who does not have any agent.*
 
 ### Solutions to the Cancellation Problem
+
+**Solution for Previous Cancellations Problem**
+
+The main reason that cancellations are a problem is because if the hotel is at capacity, or if the most profitable rooms have been booked, then you are missing out on lost revenue from the customers that would have booked and not cancelled. One solution to this problem would be to force those that have cancelled before to put down a deposit when they reserve in order to mitigate any losses that may occur from the lost revenue of other potential customers. Another solution is to reserve rooms for customers that have not cancelled in the past. You would apply Newsvendor Problem solving logic to determine the number of rooms that you leave reserved. 
 ```{r}
 # To be done later (after Wednesday)
 ```
