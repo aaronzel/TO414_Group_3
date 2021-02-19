@@ -154,6 +154,14 @@ ggplot(has_canceled, aes(is_canceled, fill= is_canceled))+ geom_bar() + labs(x="
 
 *Based on this finding we see that if someone has canceled their reservation in the past, they are highly likely to cancel once again. This is an example of the motif: "The best indicator of future behavior is past behavior*
 
+Proportion of those with special requests who have canceled
+```{r}
+special_requests <- hotel[hotel$total_of_special_requests > 0,]
+prop.table(table(special_requests$is_canceled))
+ggplot(special_requests, aes(is_canceled, fill= is_canceled))+ geom_bar()
+```
+
+
 ```{r}
 # Lead Time 
 summary(hotel$lead_time)
