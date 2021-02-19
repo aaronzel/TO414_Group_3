@@ -16,6 +16,7 @@ library("ggplot2")
 library("dplyr")
 library("lubridate")
 library("zoo")
+library("priceR")
 
 #factorizing 
 hotel$is_canceled <- as.factor(hotel$is_canceled)
@@ -108,17 +109,24 @@ df
 *The table above shows the mean ADR for if the reservation was not cancelled and cancelled. As we can discern, the mean ADR is 5 dollars higher for cancelled reservations. Although this may not constitute a large difference, if extrapolated to the entire data set of almost 120,000 reservations, a large amount of money is lost. Namely, if we multiply the mean ADR by the total number of cancellations:*
 
 ```{r}
-104.96 * 44224
+mean_adr_per_year <- aggregate(adr ~ arrival_date_year + is_canceled, data = hotel, mean)
+graph <- ggplot(data = as.data.frame(mean_adr_per_year), aes(x=arrival_date_year, y = adr, colour = is_canceled)) + geom_point(size = 6) + ggtitle("Mean ADR per Arrival Year") + labs(x = "Arrival Year", y="Mean ADR", caption=("As the year increases, the mean ADR for cancellations increases.")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+mean_adr_per_year
+graph
+```
+
+
+```{r}
+priceR::format_dollars(104.96 * 44224)
 ```
 
 *As demonstrated, more than $4.5 million dollars is lost.*
 
 ```{r}
-#plot_mean_adr_canceled <- ggplot(data = df, aes(x=hotel$is_canceled)) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("ADR")+ ggtitle("Average ADR If Not Cancelled or Cancelled") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + theme(plot.title = element_text(hjust = 0.5))
-#plot_mean_adr_canceled
 table_deposit_type <- table(hotel$deposit_type, hotel$is_canceled)
 addmargins(table_deposit_type)
 ```
+
 ```{r}
 prop_table <- prop.table(table_deposit_type)
 addmargins(prop_table)
