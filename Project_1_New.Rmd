@@ -230,6 +230,14 @@ sum(hotel$has_agent == 1 & hotel$is_canceled == 1)/sum(hotel$has_agent == 1)
 **Solution for Previous Cancellations Problem**
 
 The main reason that cancellations are a problem is because if the hotel is at capacity, or if the most profitable rooms have been booked, then you are missing out on lost revenue from the customers that would have booked and not cancelled. One solution to this problem would be to force those that have cancelled before to put down a deposit when they reserve in order to mitigate any losses that may occur from the lost revenue of other potential customers. Another solution is to reserve rooms for customers that have not cancelled in the past. You would apply Newsvendor Problem solving logic to determine the number of rooms that you leave reserved. 
+
+**Analysis of Special Requests Indicators**
+
+From our analysis, we view that those who have contacted the hotel for special requests are much less likely to cancel their reservation than a client who has not made any special requests. The hotel should take note of this whenever someone makes a request. However, correlation is not causation and it is not evident whether people decide they are not canceling before they make special requests or if they do not cancel because they have made those requests.
+
+**Lead Time Analysis**
+
+In our lead time analysis, there was a clear relationship between how far in advance a person booked and whether they cancelled their reservation or not. The trend showed that the further in advance that someone booked, the more likely they were to cancel their reservation. This is a difficult problem to have because for hotels reservations are beneficial for planning and gives the hotels a safeguard against the variance in room demand within any given week. Some possible solutions include, like the previous cancellations problem, to mandate that guests put down a deposit when they reserve a room far in advance, especially in our 
 ```{r}
 # To be done later (after Wednesday)
 ```
