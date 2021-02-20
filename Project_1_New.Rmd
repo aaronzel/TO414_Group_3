@@ -210,15 +210,15 @@ LT Prop Table 1 and the above pie charts show that there is a very obvious relat
 
 *Now, we want to look if having an agent have an affect on the rate of cancellation*
 ```{r}
-## plot of people who does not have agent
-ggplot(data=hotel[hotel$has_agent == 0,], aes(x=is_canceled,fill= as.numeric(is_canceled))) + ggtitle("People who Does not have Agent") + xlab("Cancelled Reservation") + geom_bar()
+## plot of people who do not have agent
+ggplot(data=hotel[hotel$has_agent == 0,], aes(x=is_canceled,fill= as.numeric(is_canceled))) + ggtitle("Cancellations among those without Agent") + xlab("Not Cancelled or Cancelled")+ylab("Count") + geom_bar() + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + guides(fill = FALSE)
 
-##proportion of people who canceled in the group of people who doesnt have agent
+##proportion of people who canceled in the group of people who don't have agent
 sum(hotel$has_agent == 0 & hotel$is_canceled == 1)/sum(hotel$has_agent == 0)
 
 
 ## plot of people who have agent
-ggplot(data=hotel[hotel$has_agent == 1,], aes(x=is_canceled,fill= as.numeric(is_canceled))) + ggtitle("People who have Agent") + xlab("Cancelled Reservation") + geom_bar()
+ggplot(data=hotel[hotel$has_agent == 1,], aes(x=is_canceled,fill= as.numeric(is_canceled))) + ggtitle("Cancellations among those with Agent") + xlab("Not Cancelled or Cancelled") + ylab("Count") + geom_bar() + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + guides(fill = FALSE)
 
 ##proportion of people who canceled in the group of people who have agent
 sum(hotel$has_agent == 1 & hotel$is_canceled == 1)/sum(hotel$has_agent == 1)
