@@ -133,6 +133,9 @@ graph <- ggplot(data = as.data.frame(mean_adr_per_year), aes(x=arrival_date_year
 graph
 mean_adr_per_year
 ```
+
+*The table and the graph above demonstrate a couple of interesting observations. Initially, those that do not cancel have a higher mean ADR. However, this switches in 2016 and 2017, where the reservations that are cancelled have a higher mean ADR. Also, between 2016 and 2017, the difference expands between the two. Therefore, as the arrival year progresses, the more money on average do both hotels lose.*
+
 <br />
 <br />
 **Mean ADR vs Cancellation Status**
@@ -171,6 +174,8 @@ addmargins(prop_table)
 <br />
 *We can make several observations from the two tables above. First, cancellations make up 37% of all reservations. However, of those canceling, there is a tremendous difference in non-refundable reservations. Although customers pay a non-refundable deposit, this does not constitute the full reservation amount, meaning that the hotel will still lose the money.*
 
+*Conclusion: Both hotels are losing a substantial amount of money because of the cancellations. Through the entire period, we estimated that it totaled $4.5 million. Of those that cancel, close to 2/3 of them do not place a deposit. Interestingly however, almost 1/3 do a non-refundable deposit and cancel. Still, those that do not place a deposit are more likely to cancel.*
+
 ### Causes of the Cancellation Problem 
 Now that we know cancellations are indeed a problem for hotel managers, we must understand what is causing them! We will begin my understanding the correlations of various variables with cancellations and then understand how these variables relate to a cancelled booking. Thereafter, we will explain our results in order to better illustrate what we are seeeing in the data. 
 ```{r, warning = FALSE}
@@ -186,9 +191,11 @@ correlations %>% ggplot(aes(x=reorder(rownames(correlations), correlations[,1]),
 
 ```
 
-*Evidenced by the above graph, lead time, previous cancellations, and if the guest had an agent are the most positively correlated with cancellations. This means that each of these variables increase and decrease together with cancellations. On the other hand, the total number of special requests, requested car parking spaces, and number of booking changes are negatively correlated. It is interesting to note that the length of the stay, days on waiting list, and time of year were not closely correlated with cancellations at all. Next, we will take a deeper dive into the variables identified as having the greatest positive and negative correlations.*   
+*Evidenced by the above graph, lead time, previous cancellations, and if the guest had an agent are the most positively correlated with cancellations. This means that each of these variables increase and decrease together with cancellations. On the other hand, the total number of special requests, requested car parking spaces, and number of booking changes are negatively correlated. It is interesting to note that the length of the stay, days on waiting list, and time of year were not closely correlated with cancellations at all. Next, we will take a deeper dive into the variables identified as having the greatest positive and negative correlations.* 
+
 <br />
 <br />
+
 **A: Special Requests**
 
 ```{r}
