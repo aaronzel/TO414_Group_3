@@ -128,10 +128,11 @@ hotel %>% group_by(month_year) %>%
 <br />
 **Are we losing money because of the cancellations?**
 ```{r}
+#plot of mean ADR per arrival year 
 mean_adr_per_year <- aggregate(adr ~ arrival_date_year + is_canceled, data = hotel, mean)
-graph <- ggplot(data = as.data.frame(mean_adr_per_year), aes(x=arrival_date_year, y = adr, color = is_canceled)) + geom_point(size = 6) + ggtitle("Mean ADR per Arrival Year") + labs(x = "Arrival Year", y="Mean ADR", caption=("As the year increases, the mean ADR for cancellations increases.")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+graph <- ggplot(data = as.data.frame(mean_adr_per_year), aes(x=arrival_date_year, y = adr, color = is_canceled)) + geom_point(size = 6) + ggtitle("Mean ADR per Arrival Year") + labs(x = "Arrival Year", y="Mean ADR", caption=("As the year increases, the mean ADR for cancellations increases")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
 graph
-mean_adr_per_year
+mean_adr_per_year #also in tabular format 
 ```
 
 *The table and the graph above demonstrate a couple of interesting observations. Initially, those that do not cancel have a higher mean ADR. However, this switches in 2016 and 2017, where the reservations that are cancelled have a higher mean ADR. Also, between 2016 and 2017, the difference expands between the two. Therefore, as the arrival year progresses, the more money on average do both hotels lose.*
@@ -140,6 +141,7 @@ mean_adr_per_year
 <br />
 **Mean ADR vs Cancellation Status**
 ```{r}
+#data frame for mean ADR vs cancellation status 
 table_mean_adr_canceled <- tapply(hotel$adr, hotel$is_canceled, mean, na.rm = TRUE)
 df <- as.data.frame(table_mean_adr_canceled)
 colnames(df) <- c("Mean ADR")
@@ -153,13 +155,14 @@ df
 <br />
 **Estimate of Lost Revenue due to Cancellations**
 ```{r}
-priceR::format_dollars(104.96 * 44224)
+priceR::format_dollars(104.96 * 44224) #dollar calculation
 ```
 *As demonstrated, more than $4.5 million dollars is lost.*
 <br />
 <br />
 **Deposit Type vs Number of Cancellations**
 ```{r}
+#
 table_deposit_type <- table(hotel$deposit_type, hotel$is_canceled)
 addmargins(table_deposit_type)
 ```
@@ -171,9 +174,9 @@ prop_table <- prop.table(table_deposit_type)
 addmargins(prop_table)
 ```
 <br />
-<br />
 *We can make several observations from the two tables above. First, cancellations make up 37% of all reservations. However, of those canceling, there is a tremendous difference in non-refundable reservations. Although customers pay a non-refundable deposit, this does not constitute the full reservation amount, meaning that the hotel will still lose the money.*
-
+<br />
+<br />
 *Conclusion: Both hotels are losing a substantial amount of money because of the cancellations. Through the entire period, we estimated that it totaled $4.5 million. Of those that cancel, close to 2/3 of them do not place a deposit. Interestingly however, almost 1/3 do a non-refundable deposit and cancel. Still, those that do not place a deposit are more likely to cancel.*
 
 ### Causes of the Cancellation Problem 
