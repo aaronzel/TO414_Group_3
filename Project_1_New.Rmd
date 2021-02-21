@@ -133,7 +133,7 @@ addmargins(table_deposit_type)
 prop_table <- prop.table(table_deposit_type)
 addmargins(prop_table)
 ```
-*We can make several observations from the two tables above. First, cancellations make up 37% of all reservations. However, of those cancelling, there is a tremendous difference in non-refundable reservations. Although customers pay a non-refundable deposit, this does not constitute the full reservation amount, meaning that the hotel will still lose the money.*
+*We can make several observations from the two tables above. First, cancellations make up 37% of all reservations. However, of those canceling, there is a tremendous difference in non-refundable reservations. Although customers pay a non-refundable deposit, this does not constitute the full reservation amount, meaning that the hotel will still lose the money.*
 
 ### Causes of the Cancellation Problem 
 Now that we know cancellations are indeed a problem for hotel managers, we must understand what is causing them! We will begin my understanding the correlations of various variables with cancellations and then understand how these variables relate to a cancelled booking. Thereafter, we will explain our results in order to better illustrate what we are seeeing in the data. 
@@ -148,87 +148,153 @@ correlations <- as.data.frame(cor(hotel[sapply(hotel, function(x) is.numeric(x))
 correlations %>% ggplot(aes(x=reorder(rownames(correlations), correlations[,1]), y=correlations[,1])) + 
   geom_bar(stat = 'identity') + ggtitle("Correlations with Cancellations") + labs(x="Variables", y="Cancellations",caption=("The bar graph above displays the hotel_bookings variables that have a correlation with cancellations in increasing order")) + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90))
 
-
-# (Kendall + Mike + Michael) plotting the highly correlated variables with cancellations and explaining the correlations. Then, buildiing additional graphs to further analyze
 ```
+ 
+Evidenced by the above graph, lead time, previous cancellations, and if the guest had an agent are the most positively correlated with cancellations. This means that each of these variables increase and decrease together with cancellations. On the other hand, the total number of special requests, requested car parking spaces, and number of booking changes are negatively correlated. It is interesting to note that the length of the stay, days on waiting list, and time of year were not closely correlated with cancellations at all. Next, we will take a deeper dive into the variables identified as having the greatest positive and negative correlations.   
 
-**Previous Cancellations Indicators**
 
-Proportion of those with previous cancellations that have cancelled
-``` {r}
-has_canceled <- hotel[hotel$previous_cancellations > 0,]
-prop.table(table(has_canceled$is_canceled))
-ggplot(has_canceled, aes(is_canceled, fill= is_canceled))+ geom_bar() + labs(x="Canceled Reservation", y= "Count of Canceled Reservations") + ggtitle("Reservations canceled by those who have canceled in the past")
 
-```
+**A: Special Requests**
 
-*Based on this finding we see that if someone has canceled their reservation in the past, they are highly likely to cancel once again. This is an example of the motif: "The best indicator of future behavior is past behavior*
-
-**Special Requests Indicators**
-
-Proportion of those with special requests who have canceled
+Proportion of those with special requests who have canceled:
 ```{r}
 special_requests <- hotel[hotel$total_of_special_requests > 0,]
 prop.table(table(special_requests$is_canceled))
-ggplot(special_requests, aes(is_canceled, fill= is_canceled))+ geom_bar()
 ```
+*The above table shows that of the people who have made at least one special request, 21.7% cancel their booking, and 78.3% do not cancel. *
+```{r}
+ggplot(special_requests, aes(is_canceled, fill= is_canceled))+ geom_bar() +  labs(x="Canceled Reservation", y= "Count of Canceled Reservations") + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90)) + ggtitle("Reservations Canceled by Those Who Have Special Requests")
+```
+ 
+*The above graph displays the count of reservations canceled and not canceled by people who have made at least 1 special request.                                                                                        *
+
+Proportion of those with NO special requests who have canceled:
+```{r}
+special_requests_no <- hotel[hotel$total_of_special_requests == 0,]
+prop.table(table(special_requests_no$is_canceled))
+```
+*The above table shows that of the people who have not made any special requests, 47.7% cancel their booking, and 52.3% do not cancel. *
+```{r}
+ggplot(special_requests_no, aes(is_canceled, fill= is_canceled))+ geom_bar() +  labs(x="Canceled Reservation", y= "Count of Canceled Reservations") + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90)) + ggtitle("Reservations Canceled by Those Who Do Not Have Special Requests")
+```
+
+*The above graph displays the count of reservations canceled and not canceled by people who have not made any requests.*
+
+Conclusion: People who have made at least one special quest are far less likely to cancel than people who have made no requests. People with special requests cancel 21.7% of the time, while people who make special requests cancel 47.7% of the time. This difference may be because people who make special requests feel more attached to their experience as they've personalized it, or maybe only people who are confident they are going take the time to make these requests. 
+
+**B: Lead Time** 
+
+Summary of Lead Time: 
+```{r}
+summary(hotel$lead_time)
+```
+*Lead time ranges from 0 to 737. A lead time of 0 means the person booked on the same day as arrival, while 737 indicates booking of 737 days prior to arrival. The average individual books 104 days prior.*
+
+Using the quartile information provided above, we then created buckets of lead time to better understand the data. 
+
+Lead time bucket breakdown: 
+
+Lowest Lead Time: 0 - 17 
+
+Low/Middle Lead Time: 18 - 68
+
+High/Middle Lead Time: 69 - 160
+
+Highest Lead Time: 160 - 737
+
 
 
 ```{r}
-# Lead Time 
-summary(hotel$lead_time)
+
 hotel$lead_time_range <- cut(hotel$lead_time, 
                              breaks = c(0, 18, 69, 160, 738), right = FALSE, 
                              labels = c( "Lowest", "Low/Middle", "High/Middle", "Highest"))
 
-plot(hotel$lead_time_range)
-
-ggplot(hotel, aes(x=lead_time_range, fill=is_canceled)) + geom_bar()
-
-ggplot(hotel, aes(x=is_canceled, fill=lead_time_range)) + geom_bar()
-
-# LT Prop Table 1: Prop table showing percentage of each lead time group that canceled/ did not cancel. 1 indicates cancellation. 
-prop.table(table(hotel$lead_time_range, hotel$is_canceled),1)
-
-# Pie chart showing lead time to cancellations 
-hotel_is_canceled <- hotel[!(hotel$is_canceled == 0),]
-hotel_is_canceled %>% group_by(lead_time_range) %>% summarize(n=n()) %>% ggplot(aes("", n, fill = lead_time_range)) + geom_bar(stat = 'identity', width = 1, color = "white") + coord_polar("y", start = 0) + theme_void() + labs(title = "Lead Time When Guest Cancelled")
-
-# Pie chart showing lead time when NOT canceled
-hotel_is_not_canceled <- hotel[!(hotel$is_canceled == 1),]
-hotel_is_not_canceled %>% group_by(lead_time_range) %>% summarize(n=n()) %>% ggplot(aes("", n, fill = lead_time_range)) + geom_bar(stat = 'identity', width = 1, color = "white") + coord_polar("y", start = 0) + theme_void() + labs(title = "Lead Time When Guest Did NOT Cancel")
-
-ggplot(hotel, aes(lead_time,  colour = is_canceled)) + geom_bar()
-
-ggplot(hotel_is_not_canceled, aes(arrival_date_week_number, lead_time,  colour = is_canceled)) + geom_point()
-
-# There is greater lead time in the middle of the year (summer)
-
+       
+    ggplot(hotel, aes(lead_time_range, fill= is_canceled))+ geom_bar() +  labs(x="Lead Time Bucket", y= "Count of Reservations") + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90)) + ggtitle("Reservations by Lead Time")
 
 ```
-LT Prop Table 1 and the above pie charts show that there is a very obvious relationship between lead time and cancellation. The further in advanced a person books, the more likely that they canceled. Of all the people who booked in the "Highest Lead Time" bucket, 55.3% ended up canceling. This is vastly different from people in the "Lowest Lead Time" bucket, where only 14% canceled. We also separated people who booked on the same day, and found that 6.8% of people canceled. This was surprising to the team because although 6.8% is relatively low, we did not expect people to change their minds so quickly.
 
-**Presence of Agent**
+*The above graph displays the count of reservations canceled and not canceled, grouped by various lead time buckets. *
 
-*Now, we want to look if having an agent have an affect on the rate of cancellation*
 ```{r}
-## plot of people who does not have agent
-ggplot(data=hotel[hotel$has_agent == 0,], aes(x=is_canceled,fill= is_canceled)) + ggtitle("People who Does not have Agent") + xlab("Cancelled Reservation") + geom_bar() + scale_fill_discrete(name = "Canceled Reservation")
-
-##proportion of people who canceled in the group of people who doesnt have agent
-sum(hotel$has_agent == 0 & hotel$is_canceled == 1)/sum(hotel$has_agent == 0)
-
-
-## plot of people who have agent
-ggplot(data=hotel[hotel$has_agent == 1,], aes(x=is_canceled,fill= is_canceled)) + ggtitle("People who have Agent") + xlab("Cancelled Reservation") + geom_bar() + scale_fill_discrete(name = "Canceled Reservation")
-
-##proportion of people who canceled in the group of people who have agent
-sum(hotel$has_agent == 1 & hotel$is_canceled == 1)/sum(hotel$has_agent == 1)
+ggplot(hotel, aes(x=is_canceled, fill=lead_time_range)) + geom_bar() + ggtitle("Reservations Cancelled and Kept") + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90)) 
 ```
-*From the graph above, more than 39% of people who have an agent canceled their reservation compared to only 24.7% in the people who does not have an agent. This suggests that people who have an agent have more tendency to cancel their reservations compared to the ones who does not have any agent.*
+
+*Above are two graphical representations of the relationship between lead time and cancellations. We can see that as the lead time increases, so does the chances of cancellation. Below, we will conduct additional analysis. *
 
 
-**Booking Changes**
+LT Prop Table 1: Prop table showing percentage of each lead time group that canceled/ did not cancel. 1 indicates cancellation.
+
+```{r}
+prop.table(table(hotel$lead_time_range, hotel$is_canceled),1)
+```
+
+*People with the lowest lead time canceled just 14.2% of the time, low/middle 35.7% of the time, middle/high 42.6% of the time, and highest lead time canceled 55.3% of the time. We see that the greater the lead time, the higher a chance that the person canceled. *
+
+```{r}
+hotel_is_canceled <- hotel[!(hotel$is_canceled == 0),]
+hotel_is_canceled %>% group_by(lead_time_range) %>% summarize(n=n()) %>% ggplot(aes("", n, fill = lead_time_range)) + geom_bar(stat = 'identity', width = 1, color = "white") + coord_polar("y", start = 0) + theme_void() + labs(title = "Lead Time When Guest Cancelled") + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90)) 
+```
+
+*The pie chart above shows that when a guest canceled, they were more likely to be from the highest lead time bucket than any other group.*
+
+```{r}
+hotel_is_not_canceled <- hotel[!(hotel$is_canceled == 1),]
+hotel_is_not_canceled %>% group_by(lead_time_range) %>% summarize(n=n()) %>% ggplot(aes("", n, fill = lead_time_range)) + geom_bar(stat = 'identity', width = 1, color = "white") + coord_polar("y", start = 0) + theme_void() + labs(title = "Lead Time When Guest Did NOT Cancel") + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90)) 
+```
+
+*The pie chart above shows that when a guest did not cancel, they were more likely to be from the lowest lead time bucket than any other group.*
+
+Next, we want to dive a bit deeper to understand the lead time data. We will look at the distribution of lead time and and how it varies by time of year. 
+```{r}
+ggplot(hotel, aes(lead_time,  colour = is_canceled)) + geom_bar()  +  labs(x="Lead Time", y= "Count of Reservations") + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90)) + ggtitle("Lead Times for All Reservations Reported")
+```
+
+*Clearly, most people book with a lead time less than 100 days, with a few outliers who book 600 days in advanced.*
+
+```{r}
+ggplot(hotel_is_not_canceled, aes(arrival_date_week_number, lead_time,  colour = is_canceled)) + geom_point()  +  labs(x="Arrival Date Week Number", y= "Lead Time") + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90)) + ggtitle("How Lead Time Varies by Time of Year")
+```
+
+*The above graph shows the distribution of lead time by time of year (broken down by week). It only looks at reservations that were not canceled. It appears that people tend to book with the greatest lead time for reservations that take place in the middle of the year (summer time), as well as around new years.*
+
+
+
+Conclusion: LT Prop Table 1 and the above pie charts show that there is a very obvious relationship between lead time and cancellation. The further in advanced a person books, the more likely that they canceled. Of all the people who booked in the "Highest Lead Time" bucket, 55.3% ended up canceling. This is vastly different from people in the "Lowest Lead Time" bucket, where only 14% canceled. We also separated people who booked on the same day, and found that 6.8% of people canceled. This was surprising to the team because although 6.8% is relatively low, we did not expect people to change their minds so quickly. Additionally, people tend to book with the greatest lead time for reservations that take place in the middle of the year (summer time), as well as around new years. Thus, the hotel company may want to instate more stringent cancellation policies for reservations booked for the summer and during winter holiday break. 
+
+
+**C: Presence of Agent**
+
+Now, we want to look if having an agent has an affect on the rate of cancellation. 0 means that they do not have an agent. 
+```{r}
+## plot of people who do not have agent
+ggplot(data=hotel[hotel$has_agent == 0,], aes(x=is_canceled,fill= is_canceled)) + ggtitle("People With No Agent") + xlab("Cancelled Reservation") + geom_bar()
+```
+
+Proportion of people who canceled who did not have an agent:
+```{r}
+sum(hotel$has_agent == 0 & hotel$is_canceled == 1)/sum(hotel$has_agent == 0)
+```
+Proportion of people who canceled who had an agent:
+```{r}
+sum(hotel$has_agent != 0 & hotel$is_canceled == 1)/sum(hotel$has_agent != 0)
+
+```
+
+*Of people with no agent, 24.7% of people canceled. Of the people with an agent, 39% of people canceled. Interestingly enough, people with an agent canceled more. *
+
+```{r}
+ggplot(data=hotel[hotel$has_agent == 1,], aes(x=is_canceled,fill= is_canceled)) + ggtitle("People Who Have Agent") + xlab("Cancelled Reservation") + geom_bar()
+```
+
+*The above graph shows that people who do not have an agent cancel fewer times than they retain their reservation.*
+
+
+Conclusion: From the graph above, more than 39% of people who have an agent canceled their reservation compared to only 24.7% in the people who does not have an agent. This suggests that people who have an agent have more tendency to cancel their reservations compared to the ones who does not have any agent.
+
+
+**D: Booking Changes**
 
 Now, lets look at the relationship between booking changes and cancellation rate.
 ```{r}
@@ -243,25 +309,48 @@ ggplot(as.data.frame(proportion_canceled), aes(x= c(0:21), y= proportion_cancele
 
 The graph above shows that the higher the number of booking changes, the smaller the proportion of the bookings being canceled. There is a noticeable exception when the booking changes is at 16. This is due to the fact that there are only two people who have 16 booking changes, one of which canceled. That explain the large variation in the data at that point. Note that we have to exclude the point at which booking changes is 19 because there is no person in the data who has exactly 19 booking changes.
 
+**E: Previous Cancellations**
+
+Proportion of those who have previously canceled that canceled:
+``` {r}
+has_canceled <- hotel[hotel$previous_cancellations > 0,]
+prop.table(table(has_canceled$is_canceled))
+```
+*The above table shows that of the people who have previously canceled, 91.6% cancel their booking, and 8.4% do not cancel.  * 
+``` {r}
+
+ggplot(has_canceled, aes(is_canceled, fill= is_canceled)) + geom_bar() + labs(x="Canceled Reservation", y= "Count of Canceled Reservations")+ theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90)) + ggtitle("Reservations Canceled by Those Who Have Canceled in the Past")
+```
+
+*Clearly, people who have canceled in the past cancel a lot more than they maintain their reservations. *
+
+Conclusion: Based on the above findings, we see that if someone has canceled their reservation in the past, they are highly likely to cancel once again. This is an example of the motif: "The best indicator of future behavior is past behavior". 
+
 ### Solutions to the Cancellation Problem
 
-**Solution for Previous Cancellations Problem**
+**Why Are Cancelations Such a Large Issue?**
 
-The main reason that cancellations are a problem is because if the hotel is at capacity, or if the most profitable rooms have been booked, then you are missing out on lost revenue from the customers that would have booked and not cancelled. One solution to this problem would be to force those that have cancelled before to put down a deposit when they reserve in order to mitigate any losses that may occur from the lost revenue of other potential customers. Another solution is to reserve rooms for customers that have not cancelled in the past. You would apply Newsvendor Problem solving logic to determine the number of rooms that you leave reserved. 
+The main reason that cancellations are a problem is because if the hotel is at capacity, or if the most profitable rooms have been booked, then you are missing out on lost revenue from the customers that would have booked and not canceled. One solution to this problem would be to force those that have canceled before to put down a deposit when they reserve in order to mitigate any losses that may occur from the lost revenue of other potential customers. Another solution is to reserve rooms for customers that have not canceled in the past. You would apply Newsvendor Problem solving logic to determine the number of rooms that you leave reserved. 
+
+A final solution that should be used in conjunction with the others is utilize this data to over- or under-book based on projected cancellations. For example, when a large number of people who have canceled in the past book again, a certain percentage should be overbooked to minimize losses. 
+
 
 **Analysis of Special Requests Indicators**
 
-From our analysis, we view that those who have contacted the hotel for special requests are much less likely to cancel their reservation than a client who has not made any special requests. The hotel should take note of this whenever someone makes a request. However, correlation is not causation and it is not evident whether people decide they are not canceling before they make special requests or if they do not cancel because they have made those requests.
+From our analysis, we view that those who have contacted the hotel for special requests are much less likely to cancel their reservation than a client who has not made any special requests.  of the time. This difference may be because people who make special requests feel more attached to their experience as they’ve personalized it, or maybe only people who are confident they are going take the time to make these requests. The hotel should take note of this whenever someone makes a request. However, correlation is not causation and it is not evident whether people decide they are not canceling before they make special requests or if they do not cancel because they have made those requests.
 
 **Lead Time Analysis**
 
-In our lead time analysis, there was a clear relationship between how far in advance a person booked and whether they cancelled their reservation or not. The trend showed that the further in advance that someone booked, the more likely they were to cancel their reservation. This is a difficult problem to have because for hotels reservations are beneficial for planning and gives the hotels a safeguard against the variance in room demand within any given week. Some possible solutions include, like the previous cancellations problem, to mandate that guests put down a deposit when they reserve a room far in advance, especially in our highest lead time bin, which had a cancelation rate of 55.3%. Another solution would be to limit how far out that customers can book reservations. This would make the hotel's planning more accurate.
+In our lead time analysis, there was a clear relationship between how far in advance a person booked and whether they canceled their reservation or not. The trend showed that the further in advance that someone booked, the more likely they were to cancel their reservation. This is a difficult problem to have because for hotels reservations are beneficial for planning and gives the hotels a safeguard against the variance in room demand within any given week. Some possible solutions include, like the previous cancellations problem, to mandate that guests put down a deposit when they reserve a room far in advance, especially in our highest lead time bin, which had a cancellation rate of 55.3%. Another solution would be to limit how far out that customers can book reservations. This would make the hotel's planning more accurate.
 
 **Presence of Agent Analysis**
 
 Surprisingly, those who had an agent were more likely to cancel their reservations than those who did not have agents. What the agency variable indicates is whether or not someone had a travel agency book their reservation for them. Since we discovered that those with agents were more likely to cancel, the hotel should do a better job at establishing relationships with these travel agencies and perhaps finding ways to incentivize them to have their clients follow through with their reservations. 
 
-```{r}
-# To be done later (after Wednesday)
-```
+**Analysis of Booking Changes**
+We found that in general, the higher number of booking changes, the less likely that the reservation would be canceled. As with the number of special requests, people who put more effort and intention into making the trip work may be more intentional about actually coming. Thus, the number of reservations that can be made 
+
+**Analysis of Previous Cancellations**
+
+Of the people who have previously canceled, 91.6% cancel their booking. Thus, people who have cancelled in the past are far more likely to cancel again. Thus, we suggest overbooking by a certain percentage on days that people who canceled in the past are currently booked. By understanding this data and pattern, the company can now minimize losses when people who have canceled previously cancel again. 
 
