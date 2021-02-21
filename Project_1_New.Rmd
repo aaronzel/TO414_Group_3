@@ -52,12 +52,12 @@ hotel$arrival_date_day_of_month <- as.factor(hotel$arrival_date_day_of_month)
 In order to understand if cancellations are a real problem, we must explore our data! We will analyze the number of cancellations and proportion of cancellations over time and then figure out how much this is affecting our revenue 
 
 ```{r}
-cancellationNumberPlot <- ggplot(data=hotel, aes(x=is_canceled)) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Count") + ggtitle("Count of Reservations Not Cancelled vs Cancelled") + labs(caption=("Number of Cancellations = 44,224. Total reservations = 119,390")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
-cancellationNumberPlot 
+cancellationNumberPlot <- ggplot(data=hotel, aes(x=is_canceled, fill=is_canceled)) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Count") + ggtitle("Count of Reservations Not Cancelled vs Cancelled") + labs(caption=("Number of Cancellations = 44,224. Total reservations = 119,390")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+cancellationNumberPlot + guides(fill = FALSE)
 ```
 
 ```{r}
-cancellationPropPlot <- ggplot(data=hotel, aes(x=is_canceled, y=(..count..)/sum(..count..) )) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Proportion") + ggtitle("Proportion of Reservations Not Cancelled vs Cancelled") + labs(caption=("More than a third of bookings (37%) were cancelled, which is a significant amount")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+cancellationPropPlot <- ggplot(data=hotel, aes(x=is_canceled, y=(..count..)/sum(..count..), fill=is_canceled)) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Proportion") + ggtitle("Proportion of Reservations Not Cancelled vs Cancelled") + labs(caption=("More than a third of bookings (37%) were cancelled, which is a significant amount")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + guides(fill = FALSE)
 cancellationPropPlot
 ```
 
@@ -78,7 +78,7 @@ bookings2017 <- nrow(bookings2017Table)
 
 table1 <- data_frame(year = c(2015,2016,2017), count = c(cancellations2015,cancellations2016,cancellations2017), prop = c(cancellations2015/bookings2015,cancellations2016/bookings2016,cancellations2017/bookings2017))
 
-cancellationNumberByYear<- ggplot(data=table1, aes(x=year,y=count)) + geom_bar(stat='identity') + ggtitle("Number of Cancellations by Year") + labs(x="Year", y="Count",caption=("The number of cancellations increased from 2015 to 2016 but has decreased since then")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+cancellationNumberByYear<- ggplot(data=table1, aes(x=year,y=count,fill=year)) + geom_bar(stat='identity') + ggtitle("Number of Cancellations by Year") + labs(x="Year", y="Count",caption=("The number of cancellations increased from 2015 to 2016 but has decreased since then")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + guides(fill = FALSE)
 cancellationNumberByYear
 
 hotel$is_canceled_2 <- as.numeric(hotel$is_canceled)
@@ -86,14 +86,16 @@ hotel$month_year <- as.yearmon(paste(hotel$arrival_date_month, hotel$arrival_dat
 hotel %>% group_by(month_year) %>%
    summarize(sum_canceled=sum(is_canceled_2)) %>% ggplot() + geom_point(aes(x=month_year, y=sum_canceled)) + geom_line(aes(x=month_year, y=sum_canceled)) + ggtitle("Number of Cancellations by Month over Time") + labs(x="Month and Year", y="Count",caption=("The number of cancellations are variable (seasonality + idiosyncratic effects) but show a somewhat increasing trend")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
 
-cancellationPropByYear <- ggplot(data=table1, aes(x=year,y=prop)) + geom_bar(stat='identity') + ggtitle("Proportion of Cancellations by Year") + labs(x="Year", y="Proportion",caption=("The proportion of cancellations decreased from 2015 to 2016 but has slightly increased since then")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+cancellationPropByYear <- ggplot(data=table1, aes(x=year,y=prop, fill=year)) + geom_bar(stat='identity') + ggtitle("Proportion of Cancellations by Year") + labs(x="Year", y="Proportion",caption=("The proportion of cancellations decreased from 2015 to 2016 but has slightly increased since then")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + guides(fill = FALSE)
 cancellationPropByYear
 
 hotel %>% group_by(month_year) %>%
-    summarize (n=n()) %>% mutate(prop_canceled=sum(n)/n) %>% ggplot() + geom_point(aes(x=month_year, y=prop_canceled)) + geom_line(aes(x=month_year, y=prop_canceled)) + ggtitle("Proportion of Cancellations by Month over Time") + labs(x="Month and Year", y="Proportion",caption=("The proportion of cancellations are also variable but show a somewhat decreasing trend")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+    summarize (n=n()) %>% mutate(prop_canceled=sum(n)/n) %>% ggplot() + geom_point(aes(x=month_year, y=prop_canceled)) + geom_line(aes(x=month_year, y=prop_canceled)) + ggtitle("Proportion of Cancellations by Month over Time") + labs(x="Month and Year", y="Proportion",caption=("The proportion of cancellations are also variable but show a somewhat decreasing trend")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) 
 ```
 
 *Based on the findings, we know that from 2015-2016, the number of bookings was outpacing the number of cancellations because the proportion was decreasing. Since then, the number of cancellations (although less than before) has been outpacing the number of bookings*
+
+
 
 **Are we losing money because of the cancellations?**
 
@@ -110,7 +112,7 @@ df
 
 ```{r}
 mean_adr_per_year <- aggregate(adr ~ arrival_date_year + is_canceled, data = hotel, mean)
-graph <- ggplot(data = as.data.frame(mean_adr_per_year), aes(x=arrival_date_year, y = adr, colour = is_canceled)) + geom_point(size = 6) + ggtitle("Mean ADR per Arrival Year") + labs(x = "Arrival Year", y="Mean ADR", caption=("As the year increases, the mean ADR for cancellations increases.")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+graph <- ggplot(data = as.data.frame(mean_adr_per_year), aes(x=arrival_date_year, y = adr, color = is_canceled)) + geom_point(size = 6) + ggtitle("Mean ADR per Arrival Year") + labs(x = "Arrival Year", y="Mean ADR", caption=("As the year increases, the mean ADR for cancellations increases.")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
 mean_adr_per_year
 graph
 ```
@@ -267,15 +269,15 @@ LT Prop Table 1 and the above pie charts show that there is a very obvious relat
 
 *Now, we want to look if having an agent have an affect on the rate of cancellation*
 ```{r}
-## plot of people who does not have agent
-ggplot(data=hotel[hotel$has_agent == 0,], aes(x=is_canceled,fill= as.numeric(is_canceled))) + ggtitle("People who Does not have Agent") + xlab("Cancelled Reservation") + geom_bar()
+## plot of people who do not have agent
+ggplot(data=hotel[hotel$has_agent == 0,], aes(x=is_canceled,fill= as.numeric(is_canceled))) + ggtitle("Cancellations among those without Agent") + xlab("Not Cancelled or Cancelled")+ylab("Count") + geom_bar() + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + guides(fill = FALSE)
 
-##proportion of people who canceled in the group of people who doesnt have agent
+##proportion of people who canceled in the group of people who don't have agent
 sum(hotel$has_agent == 0 & hotel$is_canceled == 1)/sum(hotel$has_agent == 0)
 
 
 ## plot of people who have agent
-ggplot(data=hotel[hotel$has_agent == 1,], aes(x=is_canceled,fill= as.numeric(is_canceled))) + ggtitle("People who have Agent") + xlab("Cancelled Reservation") + geom_bar()
+ggplot(data=hotel[hotel$has_agent == 1,], aes(x=is_canceled,fill= as.numeric(is_canceled))) + ggtitle("Cancellations among those with Agent") + xlab("Not Cancelled or Cancelled") + ylab("Count") + geom_bar() + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + guides(fill = FALSE)
 
 ##proportion of people who canceled in the group of people who have agent
 sum(hotel$has_agent == 1 & hotel$is_canceled == 1)/sum(hotel$has_agent == 1)
@@ -287,6 +289,14 @@ sum(hotel$has_agent == 1 & hotel$is_canceled == 1)/sum(hotel$has_agent == 1)
 **Solution for Previous Cancellations Problem**
 
 The main reason that cancellations are a problem is because if the hotel is at capacity, or if the most profitable rooms have been booked, then you are missing out on lost revenue from the customers that would have booked and not cancelled. One solution to this problem would be to force those that have cancelled before to put down a deposit when they reserve in order to mitigate any losses that may occur from the lost revenue of other potential customers. Another solution is to reserve rooms for customers that have not cancelled in the past. You would apply Newsvendor Problem solving logic to determine the number of rooms that you leave reserved. 
+
+**Analysis of Special Requests Indicators**
+
+From our analysis, we view that those who have contacted the hotel for special requests are much less likely to cancel their reservation than a client who has not made any special requests. The hotel should take note of this whenever someone makes a request. However, correlation is not causation and it is not evident whether people decide they are not canceling before they make special requests or if they do not cancel because they have made those requests.
+
+**Lead Time Analysis**
+
+In our lead time analysis, there was a clear relationship between how far in advance a person booked and whether they cancelled their reservation or not. The trend showed that the further in advance that someone booked, the more likely they were to cancel their reservation. This is a difficult problem to have because for hotels reservations are beneficial for planning and gives the hotels a safeguard against the variance in room demand within any given week. Some possible solutions include, like the previous cancellations problem, to mandate that guests put down a deposit when they reserve a room far in advance, especially in our 
 ```{r}
 # To be done later (after Wednesday)
 ```
