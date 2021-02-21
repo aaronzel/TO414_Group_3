@@ -213,19 +213,35 @@ LT Prop Table 1 and the above pie charts show that there is a very obvious relat
 *Now, we want to look if having an agent have an affect on the rate of cancellation*
 ```{r}
 ## plot of people who does not have agent
-ggplot(data=hotel[hotel$has_agent == 0,], aes(x=is_canceled,fill= as.numeric(is_canceled))) + ggtitle("People who Does not have Agent") + xlab("Cancelled Reservation") + geom_bar()
+ggplot(data=hotel[hotel$has_agent == 0,], aes(x=is_canceled,fill= is_canceled)) + ggtitle("People who Does not have Agent") + xlab("Cancelled Reservation") + geom_bar()
 
 ##proportion of people who canceled in the group of people who doesnt have agent
 sum(hotel$has_agent == 0 & hotel$is_canceled == 1)/sum(hotel$has_agent == 0)
 
 
 ## plot of people who have agent
-ggplot(data=hotel[hotel$has_agent == 1,], aes(x=is_canceled,fill= as.numeric(is_canceled))) + ggtitle("People who have Agent") + xlab("Cancelled Reservation") + geom_bar()
+ggplot(data=hotel[hotel$has_agent == 1,], aes(x=is_canceled,fill= is_canceled)) + ggtitle("People who have Agent") + xlab("Cancelled Reservation") + geom_bar()
 
 ##proportion of people who canceled in the group of people who have agent
 sum(hotel$has_agent == 1 & hotel$is_canceled == 1)/sum(hotel$has_agent == 1)
 ```
 *From the graph above, more than 39% of people who have an agent canceled their reservation compared to only 24.7% in the people who does not have an agent. This suggests that people who have an agent have more tendency to cancel their reservations compared to the ones who does not have any agent.*
+
+
+**Booking Changes**
+
+Now, lets look at the relationship between booking changes and cancellation rate.
+```{r}
+
+proportion_canceled = c()
+for(i in 0:21){
+  proportion_canceled[i+1] = nrow(hotel[hotel$booking_changes== i  & hotel$is_canceled == 1,])/nrow(hotel[hotel$booking_changes== i,])
+}
+
+ggplot(as.data.frame(proportion_canceled), aes(x= c(0:21), y= proportion_canceled)) + geom_line() + geom_point() + xlab("Number of Booking Changes") + ylab("Proportions Canceled")
+```
+
+The graph above shows that the higher the number of booking changes, the smaller the proportion of the bookings being canceled. There is a noticeable exception when the booking changes is at 16. This is due to the fact that there are only two people who have 16 booking changes, one of which canceled. That explain the large variation in the data at that point. Note that we have to exclude the point at which booking changes is 19 because there is no person in the data who has exactly 19 booking changes.
 
 ### Solutions to the Cancellation Problem
 
