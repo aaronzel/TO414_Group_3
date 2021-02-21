@@ -1,7 +1,7 @@
 ---
-title: "Project_1_New"
+title: "Project_1"
 author: "Sanjeev's SupeRstars: Aaron Zelmanov, Muhammad Hafizudeen Mohamad Saman, Nakul Chadha, Kendall Cohen, Michael Geraci, Michael Zhang"
-date: "2/15/2021"
+date: "2/21/2021"
 output:
   html_document:
     code_folding: hide
@@ -46,14 +46,14 @@ hotel$arrival_date_day_of_month <- as.factor(hotel$arrival_date_day_of_month)
 
 **Audience:** Hotel managers who are worried about hotel cancellations
 
-**Key Question:** What is the root cause of cancellations and how can we mitigate this issue? 
+**Key Question:** What are the root causes of cancellations and how can we mitigate this issue? 
 
 ### Are Cancellations a Problem? 
 In order to understand if cancellations are a real problem, we must explore our data! We will analyze the number of cancellations and proportion of cancellations over time and then figure out how much this is affecting our revenue 
 
 ```{r}
 #graph of number of cancellations using ggplot: x,y,titles,alignment,legends, etc. 
-cancellationNumberPlot <- ggplot(data=hotel, aes(x=is_canceled, fill=is_canceled)) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Count") + ggtitle("Count of Reservations Not Cancelled vs Cancelled") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+cancellationNumberPlot <- ggplot(data=hotel, aes(x=is_canceled, fill=is_canceled)) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Count of Reservations") + ggtitle("Count of Reservations Not Cancelled vs Cancelled") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
 cancellationNumberPlot + guides(fill = FALSE)
 ```
 
@@ -61,7 +61,7 @@ cancellationNumberPlot + guides(fill = FALSE)
 
 ```{r}
 #graph of proportion  of cancellations using ggplot: x,y,titles,alignment,legends, etc. 
-cancellationPropPlot <- ggplot(data=hotel, aes(x=is_canceled, y=(..count..)/sum(..count..), fill=is_canceled)) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Proportion") + ggtitle("Proportion of Reservations Not Cancelled vs Cancelled") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + guides(fill = FALSE)
+cancellationPropPlot <- ggplot(data=hotel, aes(x=is_canceled, y=(..count..)/sum(..count..), fill=is_canceled)) + geom_bar() + xlab("Not Cancelled or Cancelled") + ylab("Proportion of Reservations") + ggtitle("Proportion of Reservations Not Cancelled vs Cancelled") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + guides(fill = FALSE)
 cancellationPropPlot
 ```
 
@@ -88,7 +88,7 @@ bookings2017 <- nrow(bookings2017Table)
 table1 <- data_frame(year = c(2015,2016,2017), count = c(cancellations2015,cancellations2016,cancellations2017), prop = c(cancellations2015/bookings2015,cancellations2016/bookings2016,cancellations2017/bookings2017))
 
 #bar graph of number of cancellations per year 
-cancellationNumberByYear<- ggplot(data=table1, aes(x=year,y=count,fill=year)) + geom_bar(stat='identity') + ggtitle("Number of Cancellations by Year") + labs(x="Year", y="Count") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + guides(fill = FALSE)
+cancellationNumberByYear<- ggplot(data=table1, aes(x=year,y=count,fill=year)) + geom_bar(stat='identity') + ggtitle("Number of Cancellations by Year") + labs(x="Year", y="Count of Cancelled Reservations") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + guides(fill = FALSE)
 cancellationNumberByYear
 ```
 
@@ -99,14 +99,14 @@ cancellationNumberByYear
 hotel$is_canceled_2 <- as.numeric(hotel$is_canceled) #can't use factor variable 
 hotel$month_year <- as.yearmon(paste(hotel$arrival_date_month, hotel$arrival_date_year))
 hotel %>% group_by(month_year) %>%
-   summarize(sum_canceled=sum(is_canceled_2)) %>% ggplot() + geom_point(aes(x=month_year, y=sum_canceled)) + geom_line(aes(x=month_year, y=sum_canceled)) + ggtitle("Number of Cancellations by Month over Time") + labs(x="Month and Year", y="Count") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+   summarize(sum_canceled=sum(is_canceled_2)) %>% ggplot() + geom_point(aes(x=month_year, y=sum_canceled)) + geom_line(aes(x=month_year, y=sum_canceled)) + ggtitle("Number of Cancellations by Month over Time") + labs(x="Month and Year", y="Count of Cancelled Reservations") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
 ```
 
 *The number of monthly cancellations are variable (seasonality + idiosyncratic effects) but show a somewhat increasing trend over time, perhaps with a slight decrease in recent months. This reinforces the idea that cancellations continue to remain a relevant concern for hotel managers.*
 
 ```{r}
 #bar graph of proportion of cancellations per year 
-cancellationPropByYear <- ggplot(data=table1, aes(x=year,y=prop, fill=year)) + geom_bar(stat='identity') + ggtitle("Proportion of Cancellations by Year") + labs(x="Year", y="Proportion") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + guides(fill = FALSE)
+cancellationPropByYear <- ggplot(data=table1, aes(x=year,y=prop, fill=year)) + geom_bar(stat='identity') + ggtitle("Proportion of Cancellations by Year") + labs(x="Year", y="Proportion of Cancelled Reservations") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) + guides(fill = FALSE)
 cancellationPropByYear
 ```
 
@@ -116,10 +116,11 @@ cancellationPropByYear
 #line graph of proportion of monthly cancellations over time 
 hotel$month_year <- as.yearmon(paste(hotel$arrival_date_month, hotel$arrival_date_year))
 hotel %>% group_by(month_year) %>%
-    summarize (n=n()) %>% mutate(prop_canceled=sum(n)/n) %>% ggplot() + geom_point(aes(x=month_year, y=prop_canceled)) + geom_line(aes(x=month_year, y=prop_canceled)) + ggtitle("Proportion of Cancellations by Month over Time") + labs(x="Month and Year", y="Proportion") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) 
+    summarize (n=n()) %>% mutate(prop_canceled=sum(n)/n) %>% ggplot() + geom_point(aes(x=month_year, y=prop_canceled)) + geom_line(aes(x=month_year, y=prop_canceled)) + ggtitle("Proportion of Cancellations by Month over Time") + labs(x="Month and Year", y="Proportion of Cancelled Reservations") + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5)) 
 ```
 
 *The proportion of cancellations are also variable but show a somewhat decreasing trend with a slight increase in recent months. Although we will need to keep monitoring this, this could continue to be an issue for hotel managers.*
+<br />
 <br />
 <br />
 *Conclusion: Although there is a high amount of variability in both counts and proportions of cancellations, we can draw a few insights. The number of cancellations and the proportion of cancellations are extremely high. In recent months, we are observing a slight decrease in cancellations and slight increase in proportion of bookings cancelled. This means that demand might be decreasing. Thus, we must understand what's causing these cancellations and perhaps if those same factors are affecting demand too. But first, let's understand if these high number of cancellations also result in a hight amount of lost revenue.*
@@ -130,7 +131,7 @@ hotel %>% group_by(month_year) %>%
 ```{r}
 #plot of mean ADR per arrival year 
 mean_adr_per_year <- aggregate(adr ~ arrival_date_year + is_canceled, data = hotel, mean)
-graph <- ggplot(data = as.data.frame(mean_adr_per_year), aes(x=arrival_date_year, y = adr, color = is_canceled)) + geom_point(size = 6) + ggtitle("Mean ADR per Arrival Year") + labs(x = "Arrival Year", y="Mean ADR", caption=("As the year increases, the mean ADR for cancellations increases")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
+graph <- ggplot(data = as.data.frame(mean_adr_per_year), aes(x=arrival_date_year, y = adr, color = is_canceled)) + geom_point(size = 6) + ggtitle("Mean ADR per Arrival Year") + labs(x = "Year", y="Mean ADR", caption=("As the year increases, the mean ADR for cancellations increases")) + theme(plot.title = element_text(hjust = 0.5), plot.caption = element_text(hjust = 0.5))
 graph
 mean_adr_per_year #also in tabular format 
 ```
@@ -162,7 +163,7 @@ priceR::format_dollars(104.96 * 44224) #dollar calculation
 <br />
 **Deposit Type vs Number of Cancellations**
 ```{r}
-#
+#cancellations based on deposit type
 table_deposit_type <- table(hotel$deposit_type, hotel$is_canceled)
 addmargins(table_deposit_type)
 ```
@@ -170,6 +171,7 @@ addmargins(table_deposit_type)
 <br />
 **Deposit Type vs Proportion of Cancellations** 
 ```{r}
+#proportion of cancellations based on deposit type
 prop_table <- prop.table(table_deposit_type)
 addmargins(prop_table)
 ```
@@ -182,28 +184,29 @@ addmargins(prop_table)
 ### Causes of the Cancellation Problem 
 Now that we know cancellations are indeed a problem for hotel managers, we must understand what is causing them! We will begin my understanding the correlations of various variables with cancellations and then understand how these variables relate to a cancelled booking. Thereafter, we will explain our results in order to better illustrate what we are seeeing in the data. 
 ```{r, warning = FALSE}
+#defactorize (change to numeric)
 hotel$arrival_date_year_2 <- as.numeric(hotel$arrival_date_year)
 hotel$arrival_date_month_2 <- as.numeric(hotel$arrival_date_month)
 hotel$arrival_date_week_number_2 <- as.numeric(hotel$arrival_date_week_number)
 hotel$is_repeated_guest_2 <- as.numeric(hotel$is_repeated_guest)
 hotel$arrival_date_day_of_month_2 <- as.numeric(hotel$arrival_date_day_of_month)
 
+#calculate correlations to figure out which variables could be important 
 correlations <- as.data.frame(cor(hotel[sapply(hotel, function(x) is.numeric(x))])[16,])
 correlations %>% ggplot(aes(x=reorder(rownames(correlations), correlations[,1]), y=correlations[,1])) + 
   geom_bar(stat = 'identity') + ggtitle("Correlations with Cancellations") + labs(x="Variables", y="Cancellations",caption=("The bar graph above displays the hotel_bookings variables that have a correlation with cancellations in increasing order")) + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90))
-
 ```
 
 *Evidenced by the above graph, lead time, previous cancellations, and if the guest had an agent are the most positively correlated with cancellations. This means that each of these variables increase and decrease together with cancellations. On the other hand, the total number of special requests, requested car parking spaces, and number of booking changes are negatively correlated. It is interesting to note that the length of the stay, days on waiting list, and time of year were not closely correlated with cancellations at all. Next, we will take a deeper dive into the variables identified as having the greatest positive and negative correlations.* 
-
 <br />
 <br />
 
 **A: Special Requests**
 
 ```{r}
+#cancellations by those with special requests 
 special_requests <- hotel[hotel$total_of_special_requests > 0,]
-ggplot(special_requests, aes(is_canceled, fill= is_canceled))+ geom_bar() +  labs(x="Canceled Reservation", y= "Count") + theme(plot.title = element_text(hjust = 0.5)) + ggtitle("Reservations Canceled by Those Who Have Special Requests") + guides(fill = FALSE)
+ggplot(special_requests, aes(is_canceled, fill= is_canceled))+ geom_bar() +  labs(x="Not Cancelled or Cancelled", y= "Count of Cancelled Reservations") + theme(plot.title = element_text(hjust = 0.5)) + ggtitle("Reservations Canceled by Those Who Have Special Requests") + guides(fill = FALSE)
 ```
 
 *The above graph displays the count of reservations canceled and not canceled by people who have made at least 1 special request.*
@@ -211,6 +214,7 @@ ggplot(special_requests, aes(is_canceled, fill= is_canceled))+ geom_bar() +  lab
 <br />
 Proportion of those with special requests who have canceled:
 ```{r}
+#proportions 
 prop.table(table(special_requests$is_canceled))
 ```
 
@@ -219,13 +223,15 @@ prop.table(table(special_requests$is_canceled))
 <br />
 Proportion of those with NO special requests who have canceled:
 ```{r}
+#proportions 
 special_requests_no <- hotel[hotel$total_of_special_requests == 0,]
 prop.table(table(special_requests_no$is_canceled))
 ```
 
 *The above table shows that of the people who have not made any special requests, 47.7% cancel their booking, and 52.3% do not cancel. *
 ```{r}
-ggplot(special_requests_no, aes(is_canceled, fill= is_canceled))+ geom_bar() +  labs(x="Canceled Reservation", y= "Count of Canceled Reservations") + theme(plot.title = element_text(hjust = 0.5)) + ggtitle("Reservations Canceled by Those Who Do Not Have Special Requests") + guides(fill = FALSE)
+#cancellations by those with no special requests 
+ggplot(special_requests_no, aes(is_canceled, fill= is_canceled))+ geom_bar() +  labs(x="Not Cancelled or Cancelled", y= "Count of Canceled Reservations") + theme(plot.title = element_text(hjust = 0.5)) + ggtitle("Reservations Canceled by Those Who Do Not Have Special Requests") + guides(fill = FALSE)
 ```
 
 *The above graph displays the count of reservations canceled and not canceled by people who have not made any requests.*
@@ -238,6 +244,7 @@ ggplot(special_requests_no, aes(is_canceled, fill= is_canceled))+ geom_bar() +  
 
 Summary of Lead Time: 
 ```{r}
+#lead times 
 summary(hotel$lead_time)
 ```
 
@@ -255,7 +262,7 @@ High/Middle Lead Time: 69 - 160
 
 Highest Lead Time: 160 - 737
 ```{r}
-
+#Cancellations based on lead times 
 hotel$lead_time_range <- cut(hotel$lead_time, 
                              breaks = c(0, 18, 69, 160, 738), right = FALSE, 
                              labels = c( "Lowest", "Low/Middle", "High/Middle", "Highest"))
@@ -268,20 +275,23 @@ hotel$lead_time_range <- cut(hotel$lead_time,
 *The above graph displays the count of reservations canceled and not canceled, grouped by various lead time buckets. *
 
 ```{r}
-ggplot(hotel, aes(x=is_canceled, fill=lead_time_range)) + geom_bar() + ggtitle("Reservations Cancelled and Kept") + theme(plot.title = element_text(hjust = 0.5)) 
+#Reservations cancelled and kept by lead time 
+ggplot(hotel, aes(x=is_canceled, fill=lead_time_range)) + geom_bar() + ggtitle("Reservations Cancelled and Kept") + theme(plot.title = element_text(hjust = 0.5)) + xlab("Not Cancelled or Cancelled") + ylab("Count of Reservations")
 ```
 
 *Above are two graphical representations of the relationship between lead time and cancellations. We can see that as the lead time increases, so does the chances of cancellation. Below, we will conduct additional analysis. *
 <br />
 <br />
-LT Prop Table 1: Prop table showing percentage of each lead time group that canceled/ did not cancel. 1 indicates cancellation.
+LT Prop Table 1: Prop table showing percentage of each lead time group that canceled/did not cancel. 1 indicates cancellation.
 ```{r}
+#proportions per lead time group 
 prop.table(table(hotel$lead_time_range, hotel$is_canceled),1)
 ```
 
 *People with the lowest lead time canceled just 14.2% of the time, low/middle 35.7% of the time, middle/high 42.6% of the time, and highest lead time canceled 55.3% of the time. We see that the greater the lead time, the higher a chance that the person canceled. *
 
 ```{r}
+#lead time when guest cancelled 
 hotel_is_canceled <- hotel[!(hotel$is_canceled == 0),]
 hotel_is_canceled %>% group_by(lead_time_range) %>% summarize(n=n()) %>% ggplot(aes("", n, fill = lead_time_range)) + geom_bar(stat = 'identity', width = 1, color = "white") + coord_polar("y", start = 0) + theme_void() + labs(title = "Lead Time When Guest Cancelled") + theme(plot.title = element_text(hjust = 0.5)) 
 ```
@@ -289,6 +299,7 @@ hotel_is_canceled %>% group_by(lead_time_range) %>% summarize(n=n()) %>% ggplot(
 *The pie chart above shows that when a guest canceled, they were more likely to be from the highest lead time bucket than any other group.*
 
 ```{r}
+#lead time when not cancelled 
 hotel_is_not_canceled <- hotel[!(hotel$is_canceled == 1),]
 hotel_is_not_canceled %>% group_by(lead_time_range) %>% summarize(n=n()) %>% ggplot(aes("", n, fill = lead_time_range)) + geom_bar(stat = 'identity', width = 1, color = "white") + coord_polar("y", start = 0) + theme_void() + labs(title = "Lead Time When Guest Did NOT Cancel") + theme(plot.title = element_text(hjust = 0.5)) 
 ```
@@ -298,12 +309,14 @@ hotel_is_not_canceled %>% group_by(lead_time_range) %>% summarize(n=n()) %>% ggp
 <br />
 Next, we want to dive a bit deeper to understand the lead time data. We will look at the distribution of lead time and and how it varies by time of year. 
 ```{r}
-ggplot(hotel, aes(lead_time,  fill = is_canceled)) + geom_bar()  +  labs(x="Lead Time", y= "Count of Reservations") + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90)) + ggtitle("Lead Times for All Reservations Reported")
+#distribution of lead time
+ggplot(hotel, aes(lead_time,  fill = is_canceled)) + geom_bar()  +  labs(x="Lead Time", y= "Count of Reservations") + theme(plot.title = element_text(hjust = 0.5)) + ggtitle("Lead Times for All Reservations Reported")
 ```
 
 *Clearly, most people book with a lead time less than 100 days, with a few outliers who book 600 days in advanced.*
 
 ```{r}
+#distribution of lead time by time of year 
 ggplot(hotel_is_not_canceled, aes(arrival_date_week_number, lead_time,  colour = is_canceled)) + geom_point()  +  labs(x="Arrival Date Week Number", y= "Lead Time") + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90)) + ggtitle("How Lead Time Varies by Time of Year")
 ```
 
@@ -317,26 +330,29 @@ ggplot(hotel_is_not_canceled, aes(arrival_date_week_number, lead_time,  colour =
 
 Now, we want to look if having an agent has an affect on the rate of cancellation. 0 means that they do not have an agent. 
 ```{r}
-## plot of people who do not have agent
-ggplot(data=hotel[hotel$has_agent == 0,], aes(x=is_canceled,fill= is_canceled)) + ggtitle("Number of Cancellations for those without Agent") + xlab("Cancelled Reservation") + ylab("Count") + geom_bar() + theme(plot.title = element_text(hjust = 0.5)) + guides(fill = FALSE)
+#plot of people number of cancellations without agent 
+ggplot(data=hotel[hotel$has_agent == 0,], aes(x=is_canceled,fill= is_canceled)) + ggtitle("Number of Cancellations for those without Agent") + xlab("Not Cancelled or Cancelled") + ylab("Count of Cancelled Reservations") + geom_bar() + theme(plot.title = element_text(hjust = 0.5)) + guides(fill = FALSE)
 ```
 <br />
 <br />
 Proportion of people who canceled who did not have an agent:
 ```{r}
+#proportion who cancelled without agents 
 sum(hotel$has_agent == 0 & hotel$is_canceled == 1)/sum(hotel$has_agent == 0)
 ```
 <br />
 <br />
 Proportion of people who canceled who had an agent:
 ```{r}
+#proportion who cancelled with agents 
 sum(hotel$has_agent != 0 & hotel$is_canceled == 1)/sum(hotel$has_agent != 0)
 ```
 
 *Of people with no agent, 24.7% of people canceled. Of the people with an agent, 39% of people canceled. Interestingly enough, people with an agent canceled more. *
 
 ```{r}
-ggplot(data=hotel[hotel$has_agent == 1,], aes(x=is_canceled,fill= is_canceled)) + ggtitle("Number of Cancellations for those with Agent") + xlab("Cancelled Reservation") + ylab ("Count") + geom_bar() + theme(plot.title = element_text(hjust = 0.5)) + guides(fill = FALSE)
+#plot of number of cancellations with agent 
+ggplot(data=hotel[hotel$has_agent == 1,], aes(x=is_canceled,fill= is_canceled)) + ggtitle("Number of Cancellations for those with Agent") + xlab("Not Cancelled or Cancelled") + ylab ("Count of Cancelled Reservations") + geom_bar() + theme(plot.title = element_text(hjust = 0.5)) + guides(fill = FALSE)
 ```
 
 *The above graph shows that people who do not have an agent cancel fewer times than they retain their reservation.*
@@ -350,13 +366,14 @@ ggplot(data=hotel[hotel$has_agent == 1,], aes(x=is_canceled,fill= is_canceled)) 
 
 Now, lets look at the relationship between booking changes and cancellation rate.
 ```{r}
-
+#loop
 proportion_canceled = c()
 for(i in 0:21){
   proportion_canceled[i+1] = nrow(hotel[hotel$booking_changes== i  & hotel$is_canceled == 1,])/nrow(hotel[hotel$booking_changes== i,])
 }
 
-ggplot(as.data.frame(proportion_canceled), aes(x= c(0:21), y= proportion_canceled)) + geom_line() + geom_point() + xlab("Number of Booking Changes") + ylab("Proportions Canceled")
+#proportions cancelled based on number of booking changes 
+ggplot(as.data.frame(proportion_canceled), aes(x= c(0:21), y= proportion_canceled)) + geom_line() + geom_point() + xlab("Number of Booking Changes") + ylab("Proportion of Cancelled Reservations")
 ```
 
 *The graph above shows that the higher the number of booking changes, the smaller the proportion of the bookings being canceled. There is a noticeable exception when the booking changes is at 16. This is due to the fact that there are only two people who have 16 booking changes, one of which canceled. That explain the large variation in the data at that point. Note that we have to exclude the point at which booking changes is 19 because there is no person in the data who has exactly 19 booking changes.*
@@ -366,13 +383,14 @@ ggplot(as.data.frame(proportion_canceled), aes(x= c(0:21), y= proportion_cancele
 
 Proportion of those who have previously canceled that canceled:
 ``` {r}
+#prop of those who previously cancelled that cancelled again 
 has_canceled <- hotel[hotel$previous_cancellations > 0,]
 prop.table(table(has_canceled$is_canceled))
 ```
 *The above table shows that of the people who have previously canceled, 91.6% cancel their booking, and 8.4% do not cancel.  * 
 ``` {r}
-
-ggplot(has_canceled, aes(is_canceled, fill= is_canceled)) + geom_bar() + labs(x="Canceled Reservation", y= "Count")+ theme(plot.title = element_text(hjust = 0.5)) + ggtitle("Reservations Canceled by Those Who Have Canceled in the Past") + guides(fill = FALSE)
+#number of those who previously cancelled that cancelled again 
+ggplot(has_canceled, aes(is_canceled, fill= is_canceled)) + geom_bar() + labs(x="Not Cancelled or Cancelled", y= "Count of Cancelled Reservations")+ theme(plot.title = element_text(hjust = 0.5)) + ggtitle("Reservations Canceled by Those Who Have Canceled in the Past") + guides(fill = FALSE)
 ```
 
 *Clearly, people who have canceled in the past cancel a lot more than they maintain their reservations. *
